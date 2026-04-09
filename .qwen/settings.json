@@ -12,7 +12,9 @@
       "Bash(del *)",
       "Bash(dir *)",
       "Bash(copy-item *)",
-      "Bash(dart *)"
+      "Bash(dart *)",
+      "Bash(git commit *)",
+      "Bash(git push)"
     ]
   },
   "$version": 3

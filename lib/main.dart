@@ -8,6 +8,7 @@ import 'providers/auth_provider.dart';
 import 'providers/settings_provider.dart';
 import 'screens/login_screen.dart';
 import 'screens/main_menu_screen.dart';
+import 'screens/loading_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -40,6 +41,7 @@ class UdmurtKylApp extends StatefulWidget {
 class _UdmurtKylAppState extends State<UdmurtKylApp> {
   final AuthProvider _auth = AuthProvider();
   final SettingsProvider _settings = SettingsProvider();
+  bool _showSplash = true;
 
   @override
   void initState() {
@@ -48,12 +50,25 @@ class _UdmurtKylAppState extends State<UdmurtKylApp> {
   }
 
   Future<void> _initApp() async {
+    // Show loading screen for a minimum duration
+    await Future.delayed(const Duration(milliseconds: 2000));
     await _auth.init();
     await _settings.init();
+
+    setState(() {
+      _showSplash = false;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    if (_showSplash) {
+      return const MaterialApp(
+        debugShowCheckedModeBanner: false,
+        home: LoadingScreen(),
+      );
+    }
+
     return MultiProvider(
       providers: [
         ChangeNotifierProvider.value(value: _auth),
