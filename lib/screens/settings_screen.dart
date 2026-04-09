@@ -106,12 +106,14 @@ class SettingsScreen extends StatelessWidget {
                     _SettingTile(
                       icon: Icons.notifications,
                       title: 'Уведомления',
-                      subtitle: 'Push-уведомления об интересных словах',
+                      subtitle: 'Напоминания и интересные факты',
                       value: settings.notificationsEnabled,
                       onChanged: (v) async {
                         if (v) {
                           final s = await Permission.notification.request();
-                          if (s.isGranted) settings.toggleNotifications(true);
+                          if (s.isGranted) {
+                            settings.toggleNotifications(true);
+                          }
                         } else {
                           settings.toggleNotifications(false);
                         }

@@ -7,6 +7,7 @@ import '../screens/games_screen.dart';
 import '../screens/profile_screen.dart';
 import '../screens/settings_screen.dart';
 import '../theme.dart';
+import '../data/udmurt_facts.dart';
 
 class MainMenuScreen extends StatefulWidget {
   const MainMenuScreen({super.key});
@@ -76,6 +77,7 @@ class _HomeTab extends StatelessWidget {
   Widget build(BuildContext context) {
     final auth = context.watch<AuthProvider>();
     final user = auth.currentUser;
+    final randomFact = UdmurtFacts.getRandomFact();
 
     return Container(
       width: double.infinity,
@@ -267,9 +269,9 @@ class _HomeTab extends StatelessWidget {
                       ],
                     ),
                     const SizedBox(height: 10),
-                    const Text(
-                      'Удмуртский язык относится к финно-угорской языковой семье. Он является родственным венгерскому, финскому и эстонскому языкам! На нём говорят около 324 000 человек.',
-                      style: TextStyle(
+                    Text(
+                      randomFact,
+                      style: const TextStyle(
                         fontSize: 13,
                         color: AppColors.black,
                         height: 1.5,
@@ -286,28 +288,38 @@ class _HomeTab extends StatelessWidget {
   }
 
   void _showFactsDialog(BuildContext context) {
+    final languageFacts = UdmurtFacts.languageFacts;
+    final udmurtiaFacts = UdmurtFacts.udmurtiaFacts;
+
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
         backgroundColor: AppTheme.dialogBackground(context),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-        title: Text('Факты об удмуртском языке',
+        title: Text('Факты об удмуртском языке и Удмуртии',
             style: TextStyle(color: AppTheme.textColor(context))),
         content: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('📊 324 000 человек говорят на удмуртском языке.',
-                  style: TextStyle(color: AppTheme.textSecondary(context), fontSize: 14, height: 1.6)),
-              Text('🌍 Финно-угорская языковая семья — родственный венгерскому, финскому, эстонскому.',
-                  style: TextStyle(color: AppTheme.textSecondary(context), fontSize: 14, height: 1.6)),
-              Text('⚠️ С 2013 года в атласе вымирающих языков ЮНЕСКО.',
-                  style: TextStyle(color: AppTheme.textSecondary(context), fontSize: 14, height: 1.6)),
-              Text('📝 Алфавит на основе кириллице: Ӝ/ӝ, Ӟ/ӟ, Ӥ/ӥ, Ӧ/ӧ, Ӵ/ӵ.',
-                  style: TextStyle(color: AppTheme.textSecondary(context), fontSize: 14, height: 1.6)),
-              Text('🏛️ Удмуртия — между реками Кама и Вятка.',
-                  style: TextStyle(color: AppTheme.textSecondary(context), fontSize: 14, height: 1.6)),
+              Text('🏠 Удмуртия и факты',
+                  style: TextStyle(color: AppTheme.textColor(context), fontSize: 15, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 8),
+              ...udmurtiaFacts.take(5).map((fact) => Padding(
+                    padding: const EdgeInsets.only(bottom: 8),
+                    child: Text('• $fact',
+                        style: TextStyle(color: AppTheme.textSecondary(context), fontSize: 13, height: 1.5)),
+                  )),
+              const SizedBox(height: 16),
+              Text('📚 Удмуртский язык',
+                  style: TextStyle(color: AppTheme.textColor(context), fontSize: 15, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 8),
+              ...languageFacts.take(5).map((fact) => Padding(
+                    padding: const EdgeInsets.only(bottom: 8),
+                    child: Text('• $fact',
+                        style: TextStyle(color: AppTheme.textSecondary(context), fontSize: 13, height: 1.5)),
+                  )),
             ],
           ),
         ),

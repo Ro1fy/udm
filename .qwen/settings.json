@@ -14,7 +14,8 @@
       "Bash(copy-item *)",
       "Bash(dart *)",
       "Bash(git commit *)",
-      "Bash(git push)"
+      "Bash(git push)",
+      "Bash(git add *)"
     ]
   },
   "$version": 3

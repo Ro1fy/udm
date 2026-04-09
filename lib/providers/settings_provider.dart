@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../services/app_database.dart';
 import '../services/sound_service.dart';
+import '../services/notification_service.dart';
 
 class SettingsProvider extends ChangeNotifier {
   SettingsBox _settings = SettingsBox();
@@ -25,6 +26,7 @@ class SettingsProvider extends ChangeNotifier {
 
   Future<void> toggleNotifications(bool value) async {
     _settings.notificationsEnabled = value;
+    await NotificationService.setEnabled(value);
     await AppDatabase.updateSettings(_settings);
     notifyListeners();
   }

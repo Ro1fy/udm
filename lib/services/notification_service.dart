@@ -1,6 +1,7 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/timezone.dart' as tz;
 import '../data/vocabulary.dart';
+import '../data/udmurt_facts.dart';
 import 'dart:math';
 
 class NotificationService {
@@ -8,6 +9,10 @@ class NotificationService {
       FlutterLocalNotificationsPlugin();
 
   static bool _isInitialized = false;
+  static bool _notificationsEnabled = false;
+
+  static bool get isInitialized => _isInitialized;
+  static bool get notificationsEnabled => _notificationsEnabled;
 
   static Future<void> init() async {
     if (_isInitialized) return;
@@ -26,6 +31,21 @@ class NotificationService {
 
     await _notifications.initialize(initSettings);
     _isInitialized = true;
+  }
+
+  static Future<void> setEnabled(bool enabled) async {
+    _notificationsEnabled = enabled;
+    if (!enabled) {
+      await cancelAll();
+    } else {
+      await scheduleAllNotifications();
+    }
+  }
+
+  static Future<void> scheduleAllNotifications() async {
+    if (!_isInitialized) return;
+    await scheduleDailyReminder();
+    await scheduleFactNotification();
   }
 
   static Future<void> sendLocationNotification({
@@ -106,7 +126,7 @@ class NotificationService {
     await _notifications.zonedSchedule(
       2,
       '📚 Удмурт кыл',
-      'Пора учить новые слова!',
+      'Пора учить новые слова! Откройте приложение и продолжите изучение удмуртского языка.',
       _nextInstanceOfTenAM(),
       const NotificationDetails(
         android: AndroidNotificationDetails(
@@ -128,9 +148,49 @@ class NotificationService {
     );
   }
 
+  static Future<void> scheduleFactNotification() async {
+    if (!_isInitialized) return;
+
+    final fact = UdmurtFacts.getRandomFact();
+
+    // Schedule at 3:00 PM
+    await _notifications.zonedSchedule(
+      3,
+      '🏠 Удмуртия — интересный факт',
+      fact,
+      _nextInstanceOfThreePM(),
+      const NotificationDetails(
+        android: AndroidNotificationDetails(
+          'udmurt_kyl_facts',
+          'Интересные факты',
+          channelDescription: 'Ежедневные интересные факты об Удмуртии и удмуртском языке',
+          importance: Importance.defaultImportance,
+          priority: Priority.defaultPriority,
+        ),
+        iOS: DarwinNotificationDetails(
+          presentAlert: true,
+          presentBadge: true,
+        ),
+      ),
+      androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
+      uiLocalNotificationDateInterpretation:
+          UILocalNotificationDateInterpretation.absoluteTime,
+      matchDateTimeComponents: DateTimeComponents.time,
+    );
+  }
+
   static tz.TZDateTime _nextInstanceOfTenAM() {
     final now = tz.TZDateTime.now(tz.local);
     var scheduledDate = tz.TZDateTime(tz.local, now.year, now.month, now.day, 10);
+    if (scheduledDate.isBefore(now)) {
+      scheduledDate = scheduledDate.add(const Duration(days: 1));
+    }
+    return scheduledDate;
+  }
+
+  static tz.TZDateTime _nextInstanceOfThreePM() {
+    final now = tz.TZDateTime.now(tz.local);
+    var scheduledDate = tz.TZDateTime(tz.local, now.year, now.month, now.day, 15);
     if (scheduledDate.isBefore(now)) {
       scheduledDate = scheduledDate.add(const Duration(days: 1));
     }

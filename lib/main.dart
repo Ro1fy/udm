@@ -55,6 +55,11 @@ class _UdmurtKylAppState extends State<UdmurtKylApp> {
     await _auth.init();
     await _settings.init();
 
+    // Schedule notifications if enabled
+    if (_settings.notificationsEnabled) {
+      await NotificationService.scheduleAllNotifications();
+    }
+
     setState(() {
       _showSplash = false;
     });
