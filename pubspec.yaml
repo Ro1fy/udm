@@ -1,0 +1,55 @@
+name: udm
+description: "Мобильное приложение для изучения удмуртского языка «Удмурт кыл»"
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.11.4
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+  hive: ^2.2.3
+  hive_flutter: ^1.1.0
+  provider: ^6.1.2
+  geolocator: ^13.0.2
+  flutter_local_notifications: ^18.0.1
+  shared_preferences: ^2.3.3
+  audioplayers: ^6.1.0
+  flutter_svg: ^2.0.10+1
+  path_provider: ^2.1.4
+  permission_handler: ^11.3.1
+  uuid: ^4.5.1
+  timezone: ^0.10.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+  hive_generator: ^2.0.1
+  build_runner: ^2.4.13
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/logo/
+    - assets/images/
+    - assets/audio/
+    - assets/fonts/
+
+  fonts:
+    - family: Rooftop
+      fonts:
+        - asset: assets/fonts/t2-Rooftop-Regular.otf
+          weight: 400
+        - asset: assets/fonts/t2-Rooftop-Medium.otf
+          weight: 500
+    - family: Halvar
+      fonts:
+        - asset: assets/fonts/HalvarBreitt2-XBd.otf
+          weight: 800
+        - asset: assets/fonts/HalvarBreitt2-XBd.ttf
+          weight: 800
