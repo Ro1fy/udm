@@ -109,9 +109,9 @@ class _TopicCard extends StatelessWidget {
                   const SizedBox(height: 2),
                   Text(
                     '${topic.wordIds.length} слов',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 11,
-                      color: AppColors.textSecondary,
+                      color: AppTheme.textSecondary(context),
                     ),
                   ),
                 ],

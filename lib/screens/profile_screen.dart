@@ -173,9 +173,9 @@ class ProfileScreen extends StatelessWidget {
               const SizedBox(height: 12),
               Container(
                 decoration: BoxDecoration(
-                  color: AppColors.cardDark,
+                  color: AppTheme.cardBackground(context),
                   borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: AppColors.cardBorder),
+                  border: Border.all(color: AppTheme.cardBorder(context)),
                 ),
                 child: Column(
                   children: [
@@ -349,9 +349,9 @@ class _StatCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: AppColors.cardDark,
+        color: AppTheme.cardBackground(context),
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColors.cardBorder),
+        border: Border.all(color: AppTheme.cardBorder(context)),
       ),
       child: Column(
         children: [
@@ -359,10 +359,10 @@ class _StatCard extends StatelessWidget {
           const SizedBox(height: 6),
           Text(
             value,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 22,
               fontWeight: FontWeight.bold,
-              color: AppColors.white,
+              color: AppTheme.textColor(context),
             ),
           ),
           const SizedBox(height: 2),
@@ -393,16 +393,20 @@ class _GameStatCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: AppColors.cardDark,
+        color: AppTheme.cardBackground(context),
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColors.cardBorder),
+        border: Border.all(color: AppTheme.cardBorder(context)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             title,
-            style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: AppColors.white),
+            style: TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.bold,
+                color: AppTheme.textColor(context)
+            ),
           ),
           const SizedBox(height: 10),
           Row(
@@ -436,7 +440,7 @@ class _MiniStat extends StatelessWidget {
         ),
         Text(
           label,
-          style: const TextStyle(fontSize: 10, color: AppColors.textSecondary),
+          style: TextStyle(fontSize: 10, color: AppTheme.textSecondary(context)),
         ),
       ],
     );
