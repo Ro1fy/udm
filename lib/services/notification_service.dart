@@ -180,8 +180,8 @@ class NotificationService {
   }
 
   static tz.TZDateTime _nextInstanceOfTenAM() {
-    final now = tz.TZDateTime.now(tz.local);
-    var scheduledDate = tz.TZDateTime(tz.local, now.year, now.month, now.day, 10);
+    final now = tz.TZDateTime.now(tz.UTC);
+    var scheduledDate = tz.TZDateTime(tz.UTC, now.year, now.month, now.day, 10);
     if (scheduledDate.isBefore(now)) {
       scheduledDate = scheduledDate.add(const Duration(days: 1));
     }
@@ -189,8 +189,8 @@ class NotificationService {
   }
 
   static tz.TZDateTime _nextInstanceOfThreePM() {
-    final now = tz.TZDateTime.now(tz.local);
-    var scheduledDate = tz.TZDateTime(tz.local, now.year, now.month, now.day, 15);
+    final now = tz.TZDateTime.now(tz.UTC);
+    var scheduledDate = tz.TZDateTime(tz.UTC, now.year, now.month, now.day, 15);
     if (scheduledDate.isBefore(now)) {
       scheduledDate = scheduledDate.add(const Duration(days: 1));
     }
