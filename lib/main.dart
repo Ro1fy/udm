@@ -59,65 +59,103 @@ class _UdmurtKylAppState extends State<UdmurtKylApp> {
         ChangeNotifierProvider.value(value: _auth),
         ChangeNotifierProvider.value(value: _settings),
       ],
-      child: MaterialApp(
-        title: AppStrings.appName,
-        debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(
-            seedColor: AppColors.pink,
-            brightness: Brightness.light,
-          ),
-          useMaterial3: true,
-          scaffoldBackgroundColor: AppColors.lightBg,
-          fontFamily: 'Rooftop',
-          cardTheme: CardThemeData(
-            elevation: 0,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
-          ),
-          elevatedButtonTheme: ElevatedButtonThemeData(
-            style: ElevatedButton.styleFrom(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
+      child: Consumer<SettingsProvider>(
+        builder: (context, settings, _) {
+          return MaterialApp(
+            title: AppStrings.appName,
+            debugShowCheckedModeBanner: false,
+            themeMode: settings.isDarkMode ? ThemeMode.dark : ThemeMode.light,
+            theme: ThemeData(
+              colorScheme: ColorScheme.fromSeed(
+                seedColor: AppColors.pink,
+                brightness: Brightness.light,
               ),
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-            ),
-          ),
-          snackBarTheme: SnackBarThemeData(
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-          ),
-        ),
-        home: Consumer<AuthProvider>(
-          builder: (context, auth, _) {
-            if (auth.isLoading) {
-              return const Scaffold(
-                backgroundColor: AppColors.black,
-                body: Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      CircularProgressIndicator(
-                        valueColor: AlwaysStoppedAnimation<Color>(AppColors.pink),
-                      ),
-                      SizedBox(height: 16),
-                      Text(
-                        'Загрузка...',
-                        style: TextStyle(color: AppColors.white, fontSize: 16),
-                      ),
-                    ],
-                  ),
+              useMaterial3: true,
+              scaffoldBackgroundColor: AppColors.lightBg,
+              fontFamily: 'Rooftop',
+              cardTheme: CardThemeData(
+                elevation: 0,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
                 ),
-              );
-            }
-            return auth.isLoggedIn
-                ? const MainMenuScreen()
-                : const LoginScreen();
-          },
-        ),
+              ),
+              elevatedButtonTheme: ElevatedButtonThemeData(
+                style: ElevatedButton.styleFrom(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                ),
+              ),
+              snackBarTheme: SnackBarThemeData(
+                behavior: SnackBarBehavior.floating,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+            ),
+            darkTheme: ThemeData(
+              colorScheme: ColorScheme.fromSeed(
+                seedColor: AppColors.pink,
+                brightness: Brightness.dark,
+              ),
+              useMaterial3: true,
+              scaffoldBackgroundColor: AppColors.darkBg,
+              fontFamily: 'Rooftop',
+              cardTheme: CardThemeData(
+                elevation: 0,
+                color: AppColors.cardDark,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+              ),
+              elevatedButtonTheme: ElevatedButtonThemeData(
+                style: ElevatedButton.styleFrom(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                ),
+              ),
+              snackBarTheme: SnackBarThemeData(
+                behavior: SnackBarBehavior.floating,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+            ),
+            home: Consumer<AuthProvider>(
+              builder: (context, auth, _) {
+                if (auth.isLoading) {
+                  return Scaffold(
+                    backgroundColor: settings.isDarkMode ? AppColors.black : AppColors.lightBg,
+                    body: Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          CircularProgressIndicator(
+                            valueColor: AlwaysStoppedAnimation<Color>(AppColors.pink),
+                          ),
+                          SizedBox(height: 16),
+                          Text(
+                            'Загрузка...',
+                            style: TextStyle(
+                              color: settings.isDarkMode ? AppColors.white : AppColors.textOnLight,
+                              fontSize: 16,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                }
+                return auth.isLoggedIn
+                    ? const MainMenuScreen()
+                    : const LoginScreen();
+              },
+            ),
+          );
+        },
       ),
     );
   }

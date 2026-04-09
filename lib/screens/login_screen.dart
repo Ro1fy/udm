@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../constants.dart';
 import '../providers/auth_provider.dart';
 import '../screens/main_menu_screen.dart';
+import '../theme.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -71,7 +72,7 @@ class _LoginScreenState extends State<LoginScreen>
       body: Container(
         width: double.infinity,
         height: double.infinity,
-        color: AppColors.black,
+        color: AppTheme.backgroundColor(context),
         child: SafeArea(
           child: FadeTransition(
             opacity: _fadeAnim,
@@ -103,18 +104,18 @@ class _LoginScreenState extends State<LoginScreen>
                   const SizedBox(height: 28),
                   Text(
                     AppStrings.appName,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 34,
                       fontWeight: FontWeight.w800,
-                      color: AppColors.white,
+                      color: AppTheme.textColor(context),
                     ),
                   ),
                   const SizedBox(height: 6),
                   Text(
                     AppStrings.appSubtitle,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 15,
-                      color: AppColors.textSecondary,
+                      color: AppTheme.textSecondary(context),
                     ),
                   ),
                   SizedBox(height: size.height * 0.05),
@@ -122,9 +123,9 @@ class _LoginScreenState extends State<LoginScreen>
                   Container(
                     padding: const EdgeInsets.all(22),
                     decoration: BoxDecoration(
-                      color: AppColors.cardDark,
+                      color: AppTheme.cardBackground(context),
                       borderRadius: BorderRadius.circular(22),
-                      border: Border.all(color: AppColors.cardBorder),
+                      border: Border.all(color: AppTheme.cardBorder(context)),
                     ),
                     child: Form(
                       key: _formKey,
@@ -133,10 +134,10 @@ class _LoginScreenState extends State<LoginScreen>
                         children: [
                           Text(
                             _isLoginMode ? 'Вход' : 'Регистрация',
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 24,
                               fontWeight: FontWeight.bold,
-                              color: AppColors.white,
+                              color: AppTheme.textColor(context),
                             ),
                             textAlign: TextAlign.center,
                           ),
@@ -331,11 +332,11 @@ class _LoginScreenState extends State<LoginScreen>
                     color: AppColors.pink,
                   ),
                   const SizedBox(height: 8),
-                  const Text(
+                  Text(
                     'Данные хранятся только на этом устройстве',
                     style: TextStyle(
                       fontSize: 12,
-                      color: AppColors.textSecondary,
+                      color: AppTheme.textSecondary(context),
                     ),
                   ),
                   const SizedBox(height: 16),

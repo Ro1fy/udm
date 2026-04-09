@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../constants.dart';
 import '../providers/auth_provider.dart';
 import '../screens/login_screen.dart';
+import '../theme.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -19,7 +20,7 @@ class ProfileScreen extends StatelessWidget {
     return Container(
       width: double.infinity,
       height: double.infinity,
-      color: AppColors.black,
+      color: AppTheme.backgroundColor(context),
       child: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(18),
@@ -31,33 +32,33 @@ class ProfileScreen extends StatelessWidget {
                 child: Container(
                   padding: const EdgeInsets.all(22),
                   decoration: BoxDecoration(
-                    color: AppColors.cardDark,
+                    color: AppTheme.cardBackground(context),
                     borderRadius: BorderRadius.circular(22),
-                    border: Border.all(color: const Color(0xFF333333)),
+                    border: Border.all(color: AppTheme.cardBorder(context)),
                   ),
                 child: Column(
                   children: [
                     CircleAvatar(
                       radius: 46,
-                      backgroundColor: const Color(0xFF2A2A2A),
+                      backgroundColor: AppTheme.iconBackground(context),
                       child: Text(
                         user.name.isNotEmpty
                             ? user.name[0].toUpperCase()
                             : '🎓',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 44,
                           fontWeight: FontWeight.bold,
-                          color: AppColors.white,
+                          color: AppTheme.textColor(context),
                         ),
                       ),
                     ),
                     const SizedBox(height: 14),
                     Text(
                       user.name,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 26,
                         fontWeight: FontWeight.bold,
-                        color: AppColors.white,
+                        color: AppTheme.textColor(context),
                       ),
                     ),
                     const SizedBox(height: 4),
@@ -90,12 +91,12 @@ class ProfileScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 22),
-              const Text(
+              Text(
                 'Статистика',
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
-                  color: AppColors.white,
+                  color: AppTheme.textColor(context),
                 ),
               ),
               const SizedBox(height: 12),
@@ -131,12 +132,12 @@ class ProfileScreen extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 22),
-              const Text(
+              Text(
                 'Результаты игр',
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
-                  color: AppColors.white,
+                  color: AppTheme.textColor(context),
                 ),
               ),
               const SizedBox(height: 12),
@@ -161,12 +162,12 @@ class ProfileScreen extends StatelessWidget {
                 bestScore: user.gameStatsBestScore['true_false'] ?? 0,
               ),
               const SizedBox(height: 22),
-              const Text(
+              Text(
                 'Аккаунт',
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
-                  color: AppColors.white,
+                  color: AppTheme.textColor(context),
                 ),
               ),
               const SizedBox(height: 12),
@@ -181,25 +182,25 @@ class ProfileScreen extends StatelessWidget {
                     ListTile(
                       leading: const Icon(Icons.edit, color: AppColors.pink),
                       title:
-                          const Text('Редактировать профиль', style: TextStyle(color: AppColors.white)),
+                          Text('Редактировать профиль', style: TextStyle(color: AppTheme.textColor(context))),
                       trailing:
                           const Icon(Icons.chevron_right, color: AppColors.textSecondary),
                       onTap: () => _showEditProfileDialog(context),
                     ),
-                    const Divider(height: 1, color: Color(0xFF2A2A2A)),
+                    Divider(height: 1, color: AppTheme.dividerColor(context)),
                     ListTile(
                       leading: const Icon(Icons.info, color: AppColors.skyBlue),
                       title:
-                          const Text('Об удмуртском языке', style: TextStyle(color: AppColors.white)),
+                          Text('Об удмуртском языке', style: TextStyle(color: AppTheme.textColor(context))),
                       trailing:
                           const Icon(Icons.chevron_right, color: AppColors.textSecondary),
                       onTap: () => _showLanguageInfo(context),
                     ),
-                    const Divider(height: 1, color: Color(0xFF2A2A2A)),
+                    Divider(height: 1, color: AppTheme.dividerColor(context)),
                     ListTile(
                       leading: const Icon(Icons.logout, color: AppColors.lime),
                       title:
-                          const Text('Выйти', style: TextStyle(color: AppColors.white)),
+                          Text('Выйти', style: TextStyle(color: AppTheme.textColor(context))),
                       trailing:
                           const Icon(Icons.chevron_right, color: AppColors.textSecondary),
                       onTap: () async {
@@ -228,25 +229,25 @@ class ProfileScreen extends StatelessWidget {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        backgroundColor: AppColors.cardDark,
+        backgroundColor: AppTheme.dialogBackground(context),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-        title: const Text('Редактировать профиль',
-            style: TextStyle(color: AppColors.white)),
+        title: Text('Редактировать профиль',
+            style: TextStyle(color: AppTheme.textColor(context))),
         content: TextField(
           controller: controller,
-          style: const TextStyle(color: AppColors.white),
-          decoration: const InputDecoration(
+          style: TextStyle(color: AppTheme.textColor(context)),
+          decoration: InputDecoration(
             labelText: 'Имя',
-            labelStyle: TextStyle(color: AppColors.textSecondary),
+            labelStyle: TextStyle(color: AppTheme.textSecondary(context)),
             enabledBorder: UnderlineInputBorder(
-              borderSide: BorderSide(color: Color(0xFF333333)),
+              borderSide: BorderSide(color: AppTheme.cardBorder(context)),
             ),
           ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Отмена', style: TextStyle(color: AppColors.textSecondary)),
+            child: Text('Отмена', style: TextStyle(color: AppTheme.textSecondary(context))),
           ),
           ElevatedButton(
             onPressed: () {
@@ -256,7 +257,8 @@ class ProfileScreen extends StatelessWidget {
               Navigator.of(context).pop();
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.white,
+              backgroundColor: AppColors.pink,
+              foregroundColor: AppColors.white,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10),
               ),
@@ -272,14 +274,14 @@ class ProfileScreen extends StatelessWidget {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        backgroundColor: AppColors.cardDark,
+        backgroundColor: AppTheme.dialogBackground(context),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-        title: const Row(
+        title: Row(
           children: [
-            Text('🏠', style: TextStyle(fontSize: 26)),
-            SizedBox(width: 10),
+            const Text('🏠', style: TextStyle(fontSize: 26)),
+            const SizedBox(width: 10),
             Text('Удмуртский язык',
-                style: TextStyle(color: AppColors.white, fontSize: 18)),
+                style: TextStyle(color: AppTheme.textColor(context), fontSize: 18)),
           ],
         ),
         content: SingleChildScrollView(
@@ -287,12 +289,12 @@ class ProfileScreen extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
+              Text(
                 'Интересные факты',
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
-                  color: AppColors.white,
+                  color: AppTheme.textColor(context),
                 ),
               ),
               const SizedBox(height: 10),
@@ -302,18 +304,18 @@ class ProfileScreen extends StatelessWidget {
               _FactItem(emoji: '📝', fact: 'Удмуртский алфавит основан на кириллице с добавлением букв: Ӝ/ӝ, Ӟ/ӟ, Ӥ/ӥ, Ӧ/ӧ, Ӵ/ӵ.'),
               _FactItem(emoji: '🏛️', fact: 'Удмуртия — республика в составе России, расположена между реками Кама и Вятка.'),
               const SizedBox(height: 14),
-              const Text(
+              Text(
                 'Количество носителей',
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
-                  color: AppColors.white,
+                  color: AppTheme.textColor(context),
                 ),
               ),
               const SizedBox(height: 6),
-              const Text(
+              Text(
                 'По данным переписи 2010 года — 26,99% населения Удмуртии. К 2020 году доля сократилась примерно на 6%.',
-                style: TextStyle(fontSize: 13, color: AppColors.textSecondary),
+                style: TextStyle(fontSize: 13, color: AppTheme.textSecondary(context)),
               ),
             ],
           ),
@@ -322,7 +324,8 @@ class ProfileScreen extends StatelessWidget {
           ElevatedButton(
             onPressed: () => Navigator.of(context).pop(),
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.white,
+              backgroundColor: AppColors.pink,
+              foregroundColor: AppColors.white,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
             ),
             child: const Text('Понятно'),

@@ -187,13 +187,14 @@ class SettingsBoxAdapter extends TypeAdapter<SettingsBox> {
       geolocationEnabled: fields[2] as bool,
       lastLocationWordId: fields[3] as String,
       currentUserId: fields[4] as String,
+      isDarkMode: fields[5] as bool? ?? true,
     );
   }
 
   @override
   void write(BinaryWriter writer, SettingsBox obj) {
     writer
-      ..writeByte(5)
+      ..writeByte(6)
       ..writeByte(0)
       ..write(obj.soundEnabled)
       ..writeByte(1)
@@ -203,7 +204,9 @@ class SettingsBoxAdapter extends TypeAdapter<SettingsBox> {
       ..writeByte(3)
       ..write(obj.lastLocationWordId)
       ..writeByte(4)
-      ..write(obj.currentUserId);
+      ..write(obj.currentUserId)
+      ..writeByte(5)
+      ..write(obj.isDarkMode);
   }
 
   @override

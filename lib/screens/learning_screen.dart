@@ -5,6 +5,7 @@ import '../data/vocabulary.dart';
 import '../models/word.dart';
 import '../providers/auth_provider.dart';
 import '../widgets/word_card_widget.dart';
+import '../theme.dart';
 
 class LearningScreen extends StatelessWidget {
   const LearningScreen({super.key});
@@ -14,19 +15,19 @@ class LearningScreen extends StatelessWidget {
     return Container(
       width: double.infinity,
       height: double.infinity,
-      color: AppColors.black,
+      color: AppTheme.backgroundColor(context),
       child: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Padding(
-              padding: EdgeInsets.all(18),
+            Padding(
+              padding: const EdgeInsets.all(18),
               child: Text(
                 'Обучение',
                 style: TextStyle(
                   fontSize: 30,
                   fontWeight: FontWeight.w800,
-                  color: AppColors.white,
+                  color: AppTheme.textColor(context),
                 ),
               ),
             ),
@@ -66,9 +67,9 @@ class _TopicCard extends StatelessWidget {
         margin: const EdgeInsets.only(bottom: 12),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: AppColors.cardDark,
+          color: AppTheme.cardBackground(context),
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: AppColors.cardBorder),
+          border: Border.all(color: AppTheme.cardBorder(context)),
         ),
         child: Row(
           children: [
@@ -90,10 +91,10 @@ class _TopicCard extends StatelessWidget {
                 children: [
                   Text(
                     topic.title,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
-                      color: AppColors.white,
+                      color: AppTheme.textColor(context),
                     ),
                   ),
                   const SizedBox(height: 2),
@@ -187,7 +188,7 @@ class _TopicWordsScreenState extends State<TopicWordsScreen> {
       body: Container(
         width: double.infinity,
         height: double.infinity,
-        color: AppColors.black,
+        color: AppTheme.backgroundColor(context),
         child: SafeArea(
           child: Column(
             children: [
@@ -196,7 +197,7 @@ class _TopicWordsScreenState extends State<TopicWordsScreen> {
                 child: Row(
                   children: [
                     IconButton(
-                      icon: const Icon(Icons.arrow_back, color: AppColors.white),
+                      icon: Icon(Icons.arrow_back, color: AppTheme.textColor(context)),
                       onPressed: () => Navigator.of(context).pop(),
                     ),
                     Expanded(
@@ -205,17 +206,17 @@ class _TopicWordsScreenState extends State<TopicWordsScreen> {
                         children: [
                           Text(
                             widget.topic.title,
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
-                              color: AppColors.white,
+                              color: AppTheme.textColor(context),
                             ),
                           ),
                           Text(
                             '${_currentIndex + 1} / ${_words.length}',
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 13,
-                              color: AppColors.textSecondary,
+                              color: AppTheme.textSecondary(context),
                             ),
                           ),
                         ],
@@ -228,7 +229,7 @@ class _TopicWordsScreenState extends State<TopicWordsScreen> {
                 padding: const EdgeInsets.symmetric(horizontal: 14),
                 child: LinearProgressIndicator(
                   value: (_currentIndex + 1) / _words.length,
-                  backgroundColor: AppColors.cardDark,
+                  backgroundColor: AppTheme.progressBackground(context),
                   valueColor:
                       const AlwaysStoppedAnimation<Color>(AppColors.pink),
                 ),
@@ -254,7 +255,7 @@ class _TopicWordsScreenState extends State<TopicWordsScreen> {
                         icon: const Icon(Icons.arrow_back),
                         label: const Text('Назад'),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.cardDark,
+                          backgroundColor: AppTheme.cardBackground(context),
                           foregroundColor: AppColors.pink,
                           padding: const EdgeInsets.symmetric(vertical: 15),
                           shape: RoundedRectangleBorder(

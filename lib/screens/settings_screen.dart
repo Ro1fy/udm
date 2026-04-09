@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import '../constants.dart';
 import '../providers/settings_provider.dart';
+import '../theme.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -10,23 +11,24 @@ class SettingsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final settings = context.watch<SettingsProvider>();
+    final isDark = AppTheme.isDark(context);
 
     return Container(
       width: double.infinity,
       height: double.infinity,
-      color: AppColors.black,
+      color: AppTheme.backgroundColor(context),
       child: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(18),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
+              Text(
                 'Настройки',
                 style: TextStyle(
                   fontSize: 30,
                   fontWeight: FontWeight.w800,
-                  color: AppColors.white,
+                  color: AppTheme.textColor(context),
                 ),
               ),
               const SizedBox(height: 22),
@@ -68,23 +70,31 @@ class SettingsScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 28),
-              const Text(
+              Text(
                 'Основные настройки',
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
-                  color: AppColors.white,
+                  color: AppTheme.textColor(context),
                 ),
               ),
               const SizedBox(height: 12),
               Container(
                 decoration: BoxDecoration(
-                  color: const Color(0xFF1A1A1A),
+                  color: AppTheme.cardBackground(context),
                   borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: const Color(0xFF2A2A2A)),
+                  border: Border.all(color: AppTheme.cardBorder(context)),
                 ),
                 child: Column(
                   children: [
+                    _SettingTile(
+                      icon: Icons.palette,
+                      title: 'Тёмная тема',
+                      subtitle: 'Использовать тёмное оформление',
+                      value: settings.isDarkMode,
+                      onChanged: settings.toggleTheme,
+                    ),
+                    Divider(height: 1, color: AppTheme.dividerColor(context)),
                     _SettingTile(
                       icon: Icons.volume_up,
                       title: 'Звук',
@@ -92,7 +102,7 @@ class SettingsScreen extends StatelessWidget {
                       value: settings.soundEnabled,
                       onChanged: settings.toggleSound,
                     ),
-                    const Divider(height: 1, color: Color(0xFF2A2A2A)),
+                    Divider(height: 1, color: AppTheme.dividerColor(context)),
                     _SettingTile(
                       icon: Icons.notifications,
                       title: 'Уведомления',
@@ -107,7 +117,7 @@ class SettingsScreen extends StatelessWidget {
                         }
                       },
                     ),
-                    const Divider(height: 1, color: Color(0xFF2A2A2A)),
+                    Divider(height: 1, color: AppTheme.dividerColor(context)),
                     _SettingTile(
                       icon: Icons.location_on,
                       title: 'Геолокация',
@@ -126,20 +136,20 @@ class SettingsScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 28),
-              const Text(
+              Text(
                 'О приложении',
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
-                  color: AppColors.white,
+                  color: AppTheme.textColor(context),
                 ),
               ),
               const SizedBox(height: 12),
               Container(
                 decoration: BoxDecoration(
-                  color: const Color(0xFF1A1A1A),
+                  color: AppTheme.cardBackground(context),
                   borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: const Color(0xFF2A2A2A)),
+                  border: Border.all(color: AppTheme.cardBorder(context)),
                 ),
                 child: Column(
                   children: [
@@ -148,19 +158,19 @@ class SettingsScreen extends StatelessWidget {
                       title: 'Удмуртский язык',
                       subtitle: 'Финно-угорская языковая семья',
                     ),
-                    const Divider(height: 1, color: Color(0xFF2A2A2A)),
+                    Divider(height: 1, color: AppTheme.dividerColor(context)),
                     const _InfoTile(
                       icon: Icons.people,
                       title: 'Носителей',
                       subtitle: '~324 000 человек',
                     ),
-                    const Divider(height: 1, color: Color(0xFF2A2A2A)),
+                    Divider(height: 1, color: AppTheme.dividerColor(context)),
                     const _InfoTile(
                       icon: Icons.warning_amber,
                       title: 'Статус ЮНЕСКО',
                       subtitle: 'Под угрозой исчезновения (с 2013 г.)',
                     ),
-                    const Divider(height: 1, color: Color(0xFF2A2A2A)),
+                    Divider(height: 1, color: AppTheme.dividerColor(context)),
                     ListTile(
                       leading: Container(
                         padding: const EdgeInsets.all(8),
@@ -187,24 +197,25 @@ class SettingsScreen extends StatelessWidget {
   }
 
   void _showLanguageDetails(BuildContext context) {
+    final isDark = AppTheme.isDark(context);
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        backgroundColor: const Color(0xFF1A1A1A),
+        backgroundColor: AppTheme.dialogBackground(context),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-        title: const Text('Удмуртский язык',
-            style: TextStyle(color: AppColors.white)),
+        title: Text('Удмуртский язык',
+            style: TextStyle(color: AppTheme.textColor(context))),
         content: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: const [
+            children: [
               Text('Общие сведения',
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.skyBlue)),
               SizedBox(height: 6),
               Text(
                 'Удмуртский язык (удмурт кыл) — язык удмуртов, один из финно-угорских языков.',
-                style: TextStyle(fontSize: 13, height: 1.5, color: AppColors.textSecondary),
+                style: TextStyle(fontSize: 13, height: 1.5, color: AppTheme.textSecondary(context)),
               ),
               SizedBox(height: 14),
               Text('Алфавит',
@@ -212,7 +223,7 @@ class SettingsScreen extends StatelessWidget {
               SizedBox(height: 6),
               Text(
                 'Основан на кириллице. Дополнительные буквы: Ӝ/ӝ, Ӟ/ӟ, Ӥ/ӥ, Ӧ/ӧ, Ӵ/ӵ.',
-                style: TextStyle(fontSize: 13, height: 1.5, color: AppColors.textSecondary),
+                style: TextStyle(fontSize: 13, height: 1.5, color: AppTheme.textSecondary(context)),
               ),
             ],
           ),
@@ -222,6 +233,7 @@ class SettingsScreen extends StatelessWidget {
             onPressed: () => Navigator.of(context).pop(),
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.pink,
+              foregroundColor: AppColors.white,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
             ),
             child: const Text('Закрыть'),
@@ -254,19 +266,19 @@ class _SettingTile extends StatelessWidget {
       secondary: Container(
         padding: const EdgeInsets.all(9),
         decoration: BoxDecoration(
-          color: AppColors.pink.withOpacity(0.12),
+          color: AppTheme.iconBackground(context),
           borderRadius: BorderRadius.circular(10),
         ),
         child: Icon(icon, color: AppColors.pink, size: 22),
       ),
       title: Text(title,
-          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: AppColors.white)),
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: AppTheme.textColor(context))),
       subtitle: Text(subtitle,
-          style: const TextStyle(fontSize: 11, color: AppColors.textSecondary)),
+          style: TextStyle(fontSize: 11, color: AppTheme.textSecondary(context))),
       value: value,
       onChanged: onChanged,
       activeThumbColor: AppColors.pink,
-      inactiveTrackColor: const Color(0xFF333333),
+      inactiveTrackColor: AppTheme.switchInactiveTrack(context),
     );
   }
 }
@@ -285,15 +297,15 @@ class _InfoTile extends StatelessWidget {
       leading: Container(
         padding: const EdgeInsets.all(9),
         decoration: BoxDecoration(
-          color: AppColors.pink.withOpacity(0.12),
+          color: AppTheme.iconBackground(context),
           borderRadius: BorderRadius.circular(10),
         ),
         child: Icon(icon, color: AppColors.pink, size: 22),
       ),
       title: Text(title,
-          style: const TextStyle(fontWeight: FontWeight.bold, color: AppColors.white)),
+          style: TextStyle(fontWeight: FontWeight.bold, color: AppTheme.textColor(context))),
       subtitle: Text(subtitle,
-          style: const TextStyle(color: AppColors.textSecondary)),
+          style: TextStyle(color: AppTheme.textSecondary(context))),
     );
   }
 }

@@ -166,12 +166,16 @@ class SettingsBox {
   @HiveField(4)
   String currentUserId;
 
+  @HiveField(5)
+  bool isDarkMode;
+
   SettingsBox({
     this.soundEnabled = true,
     this.notificationsEnabled = false,
     this.geolocationEnabled = false,
     this.lastLocationWordId = '',
     this.currentUserId = '',
+    this.isDarkMode = true,
   });
 }
 

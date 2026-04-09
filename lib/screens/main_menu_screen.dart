@@ -6,6 +6,7 @@ import '../screens/learning_screen.dart';
 import '../screens/games_screen.dart';
 import '../screens/profile_screen.dart';
 import '../screens/settings_screen.dart';
+import '../theme.dart';
 
 class MainMenuScreen extends StatefulWidget {
   const MainMenuScreen({super.key});
@@ -38,7 +39,7 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
         decoration: BoxDecoration(
           boxShadow: [
             BoxShadow(
-              color: AppColors.black.withOpacity(0.15),
+              color: AppTheme.shadowColor(context),
               blurRadius: 10,
             ),
           ],
@@ -47,9 +48,9 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
           currentIndex: _selectedIndex,
           onTap: _onItemTapped,
           type: BottomNavigationBarType.fixed,
-          backgroundColor: AppColors.black,
-          selectedItemColor: AppColors.white,
-          unselectedItemColor: AppColors.textSecondary,
+          backgroundColor: AppTheme.backgroundColor(context),
+          selectedItemColor: AppColors.pink,
+          unselectedItemColor: AppTheme.textSecondary(context),
           selectedFontSize: 11,
           unselectedFontSize: 10,
           elevation: 0,
@@ -79,7 +80,7 @@ class _HomeTab extends StatelessWidget {
     return Container(
       width: double.infinity,
       height: double.infinity,
-      color: AppColors.black,
+      color: AppTheme.backgroundColor(context),
       child: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(18),
@@ -94,18 +95,18 @@ class _HomeTab extends StatelessWidget {
                     children: [
                       Text(
                         'Привет, ${user?.name ?? 'Друг'}! 👋',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 26,
                           fontWeight: FontWeight.w800,
-                          color: AppColors.white,
+                          color: AppTheme.textColor(context),
                         ),
                       ),
                       const SizedBox(height: 4),
-                      const Text(
+                      Text(
                         'Готов учить удмуртский?',
                         style: TextStyle(
                           fontSize: 14,
-                          color: AppColors.textSecondary,
+                          color: AppTheme.textSecondary(context),
                         ),
                       ),
                     ],
@@ -114,20 +115,20 @@ class _HomeTab extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(
                         horizontal: 14, vertical: 7),
                     decoration: BoxDecoration(
-                      color: AppColors.cardDark,
+                      color: AppTheme.cardBackground(context),
                       borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: const Color(0xFF333333)),
+                      border: Border.all(color: AppTheme.cardBorder(context)),
                     ),
                     child: Row(
                       children: [
-                        const Icon(Icons.whatshot,
-                            color: AppColors.white, size: 18),
+                        Icon(Icons.whatshot,
+                            color: AppTheme.textColor(context), size: 18),
                         const SizedBox(width: 4),
                         Text(
                           '${user?.streak ?? 0}',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontWeight: FontWeight.bold,
-                            color: AppColors.white,
+                            color: AppTheme.textColor(context),
                           ),
                         ),
                       ],
@@ -140,35 +141,35 @@ class _HomeTab extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(22),
                 decoration: BoxDecoration(
-                  color: AppColors.cardDark,
+                  color: AppTheme.cardBackground(context),
                   borderRadius: BorderRadius.circular(22),
-                  border: Border.all(color: const Color(0xFF333333)),
+                  border: Border.all(color: AppTheme.cardBorder(context)),
                 ),
                 child: Column(
                   children: [
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text(
+                        Text(
                           'Уровень',
                           style: TextStyle(
                             fontSize: 17,
-                            color: AppColors.white,
+                            color: AppTheme.textColor(context),
                           ),
                         ),
                         Container(
                           padding: const EdgeInsets.symmetric(
                               horizontal: 14, vertical: 7),
                           decoration: BoxDecoration(
-                            color: const Color(0xFF2A2A2A),
+                            color: AppTheme.iconBackground(context),
                             borderRadius: BorderRadius.circular(14),
                           ),
                           child: Text(
                             '${user?.level ?? 1}',
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 22,
                               fontWeight: FontWeight.bold,
-                              color: AppColors.white,
+                              color: AppTheme.textColor(context),
                             ),
                           ),
                         ),
@@ -177,25 +178,25 @@ class _HomeTab extends StatelessWidget {
                     const SizedBox(height: 14),
                     LinearProgressIndicator(
                       value: ((user?.xp ?? 0) % 100) / 100,
-                      backgroundColor: const Color(0xFF333333),
+                      backgroundColor: AppTheme.progressBackground(context),
                       valueColor:
                           const AlwaysStoppedAnimation<Color>(AppColors.pink),
                     ),
                     const SizedBox(height: 6),
                     Text(
                       '${user?.xp ?? 0} / ${(user?.level ?? 1) * 100} XP',
-                      style: const TextStyle(color: AppColors.textSecondary, fontSize: 13),
+                      style: TextStyle(color: AppTheme.textSecondary(context), fontSize: 13),
                     ),
                   ],
                 ),
               ),
               const SizedBox(height: 24),
-              const Text(
+              Text(
                 'Начать изучение',
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
-                  color: AppColors.white,
+                  color: AppTheme.textColor(context),
                 ),
               ),
               const SizedBox(height: 14),
@@ -288,25 +289,25 @@ class _HomeTab extends StatelessWidget {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        backgroundColor: AppColors.cardDark,
+        backgroundColor: AppTheme.dialogBackground(context),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-        title: const Text('Факты об удмуртском языке',
-            style: TextStyle(color: AppColors.white)),
+        title: Text('Факты об удмуртском языке',
+            style: TextStyle(color: AppTheme.textColor(context))),
         content: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: const [
+            children: [
               Text('📊 324 000 человек говорят на удмуртском языке.',
-                  style: TextStyle(color: AppColors.textSecondary, fontSize: 14, height: 1.6)),
+                  style: TextStyle(color: AppTheme.textSecondary(context), fontSize: 14, height: 1.6)),
               Text('🌍 Финно-угорская языковая семья — родственный венгерскому, финскому, эстонскому.',
-                  style: TextStyle(color: AppColors.textSecondary, fontSize: 14, height: 1.6)),
+                  style: TextStyle(color: AppTheme.textSecondary(context), fontSize: 14, height: 1.6)),
               Text('⚠️ С 2013 года в атласе вымирающих языков ЮНЕСКО.',
-                  style: TextStyle(color: AppColors.textSecondary, fontSize: 14, height: 1.6)),
+                  style: TextStyle(color: AppTheme.textSecondary(context), fontSize: 14, height: 1.6)),
               Text('📝 Алфавит на основе кириллице: Ӝ/ӝ, Ӟ/ӟ, Ӥ/ӥ, Ӧ/ӧ, Ӵ/ӵ.',
-                  style: TextStyle(color: AppColors.textSecondary, fontSize: 14, height: 1.6)),
+                  style: TextStyle(color: AppTheme.textSecondary(context), fontSize: 14, height: 1.6)),
               Text('🏛️ Удмуртия — между реками Кама и Вятка.',
-                  style: TextStyle(color: AppColors.textSecondary, fontSize: 14, height: 1.6)),
+                  style: TextStyle(color: AppTheme.textSecondary(context), fontSize: 14, height: 1.6)),
             ],
           ),
         ),
@@ -314,8 +315,8 @@ class _HomeTab extends StatelessWidget {
           ElevatedButton(
             onPressed: () => Navigator.of(context).pop(),
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.white,
-              foregroundColor: AppColors.black,
+              backgroundColor: AppColors.pink,
+              foregroundColor: AppColors.white,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
             ),
             child: const Text('Понятно'),
@@ -343,9 +344,9 @@ class _QuickActionCard extends StatelessWidget {
       onTap: onTap,
       child: Container(
         decoration: BoxDecoration(
-          color: AppColors.cardDark,
+          color: AppTheme.cardBackground(context),
           borderRadius: BorderRadius.circular(18),
-          border: Border.all(color: const Color(0xFF333333)),
+          border: Border.all(color: AppTheme.cardBorder(context)),
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -353,7 +354,7 @@ class _QuickActionCard extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
-                color: const Color(0xFF2A2A2A),
+                color: AppTheme.iconBackground(context),
                 shape: BoxShape.circle,
               ),
               child: Icon(icon, color: AppColors.pink, size: 32),
@@ -361,10 +362,10 @@ class _QuickActionCard extends StatelessWidget {
             const SizedBox(height: 10),
             Text(
               title,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 15,
                 fontWeight: FontWeight.bold,
-                color: AppColors.white,
+                color: AppTheme.textColor(context),
               ),
             ),
           ],

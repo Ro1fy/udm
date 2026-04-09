@@ -8,6 +8,7 @@ class SettingsProvider extends ChangeNotifier {
   bool get soundEnabled => _settings.soundEnabled;
   bool get notificationsEnabled => _settings.notificationsEnabled;
   bool get geolocationEnabled => _settings.geolocationEnabled;
+  bool get isDarkMode => _settings.isDarkMode;
 
   Future<void> init() async {
     _settings = await AppDatabase.getSettings();
@@ -30,6 +31,12 @@ class SettingsProvider extends ChangeNotifier {
 
   Future<void> toggleGeolocation(bool value) async {
     _settings.geolocationEnabled = value;
+    await AppDatabase.updateSettings(_settings);
+    notifyListeners();
+  }
+
+  Future<void> toggleTheme(bool isDark) async {
+    _settings.isDarkMode = isDark;
     await AppDatabase.updateSettings(_settings);
     notifyListeners();
   }

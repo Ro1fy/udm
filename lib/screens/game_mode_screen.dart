@@ -29,6 +29,7 @@ class _GameModeScreenState extends State<GameModeScreen> {
   String _userAnswer = '';
   bool _tfAnswered = false;
   bool? _tfCorrect;
+  bool _tfShowCorrect = true; // Whether the displayed emoji matches the word
 
   @override
   void initState() {
@@ -36,6 +37,15 @@ class _GameModeScreenState extends State<GameModeScreen> {
     _generateQuestions();
     if (widget.gameMode == GameMode.wordScramble) {
       _scrambleCurrentWord();
+    }
+    _initTrueFalseQuestion();
+  }
+
+  void _initTrueFalseQuestion() {
+    if (widget.gameMode == GameMode.trueFalse) {
+      setState(() {
+        _tfShowCorrect = Random().nextBool();
+      });
     }
   }
 
@@ -77,8 +87,7 @@ class _GameModeScreenState extends State<GameModeScreen> {
 
   void _checkTrueFalse(bool userSaysTrue) {
     if (_tfAnswered) return;
-    final word = _questions[_currentIndex];
-    final isActuallyTrue = _getEmojiForWord(word) == _getCurrentEmoji();
+    final isActuallyTrue = _tfShowCorrect;
 
     setState(() {
       _tfAnswered = true;
@@ -108,6 +117,8 @@ class _GameModeScreenState extends State<GameModeScreen> {
         });
         if (widget.gameMode == GameMode.wordScramble) {
           _scrambleCurrentWord();
+        } else if (widget.gameMode == GameMode.trueFalse) {
+          _initTrueFalseQuestion();
         }
       } else {
         _showResults();
@@ -180,10 +191,13 @@ class _GameModeScreenState extends State<GameModeScreen> {
                 _selectedIndex = null;
                 _tfAnswered = false;
                 _tfCorrect = null;
+                _tfShowCorrect = true;
               });
               _generateQuestions();
               if (widget.gameMode == GameMode.wordScramble) {
                 _scrambleCurrentWord();
+              } else if (widget.gameMode == GameMode.trueFalse) {
+                _initTrueFalseQuestion();
               }
             },
             style: ElevatedButton.styleFrom(
@@ -602,11 +616,8 @@ class _GameModeScreenState extends State<GameModeScreen> {
 
   Widget _buildTrueFalse() {
     final word = _questions[_currentIndex];
-    final emoji = _getCurrentEmoji();
-    // Randomly decide if the displayed emoji matches the word
-    final random = Random();
-    final showCorrectEmoji = random.nextBool();
-    final displayedEmoji = showCorrectEmoji ? emoji : _getRandomEmoji(word);
+    final emoji = _getEmojiForWord(word);
+    final displayedEmoji = _tfShowCorrect ? emoji : _getRandomEmoji(word);
 
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,

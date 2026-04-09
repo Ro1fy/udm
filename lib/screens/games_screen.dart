@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../constants.dart';
 import '../screens/game_mode_screen.dart';
+import '../theme.dart';
 
 class GamesScreen extends StatelessWidget {
   const GamesScreen({super.key});
@@ -10,19 +11,19 @@ class GamesScreen extends StatelessWidget {
     return Container(
       width: double.infinity,
       height: double.infinity,
-      color: AppColors.black,
+      color: AppTheme.backgroundColor(context),
       child: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Padding(
-              padding: EdgeInsets.all(18),
+            Padding(
+              padding: const EdgeInsets.all(18),
               child: Text(
                 'Игры',
                 style: TextStyle(
                   fontSize: 30,
                   fontWeight: FontWeight.w800,
-                  color: AppColors.white,
+                  color: AppTheme.textColor(context),
                 ),
               ),
             ),
@@ -104,12 +105,12 @@ class _GameModeCard extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: AppColors.cardDark,
+          color: AppTheme.cardBackground(context),
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: const Color(0xFF333333)),
+          border: Border.all(color: AppTheme.cardBorder(context)),
           boxShadow: [
             BoxShadow(
-              color: AppColors.black.withOpacity(0.3),
+              color: AppTheme.shadowColor(context),
               blurRadius: 12,
             ),
           ],
@@ -120,7 +121,7 @@ class _GameModeCard extends StatelessWidget {
               width: 64,
               height: 64,
               decoration: BoxDecoration(
-                color: const Color(0xFF2A2A2A),
+                color: AppTheme.iconBackground(context),
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Icon(icon, color: AppColors.pink, size: 34),
@@ -132,10 +133,10 @@ class _GameModeCard extends StatelessWidget {
                 children: [
                   Text(
                     title,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      color: AppColors.white,
+                      color: AppTheme.textColor(context),
                     ),
                   ),
                   const SizedBox(height: 6),
