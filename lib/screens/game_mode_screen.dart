@@ -131,12 +131,14 @@ class _GameModeScreenState extends State<GameModeScreen> {
       points: _tfCorrect! ? 10 : 0,
     ));
 
-    // DO NOT reset _tfShowCorrect here - keep the same emoji visible
+    if (!isActuallyTrue) {
+      _tfDisplayedEmoji = _getCurrentEmoji();
+    }
     _finishQuestion();
   }
 
   void _finishQuestion() {
-    Future.delayed(const Duration(seconds: 1), () {
+    Future.delayed(const Duration(seconds: 1, milliseconds: 500), () {
       if (!mounted) return;
       if (_currentIndex < _questions.length - 1) {
         setState(() {
