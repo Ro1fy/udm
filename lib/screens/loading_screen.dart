@@ -52,7 +52,6 @@ class _LoadingScreenState extends State<LoadingScreen>
             'assets/images/load_img.png',
             width: 180,
             height: 180,
-            fit: BoxFit.contain,
           ),
         ),
       ),
