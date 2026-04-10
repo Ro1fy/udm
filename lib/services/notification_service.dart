@@ -42,6 +42,16 @@ class NotificationService {
     }
   }
 
+  static Future<void> show(
+    int id,
+    String title,
+    String body,
+    NotificationDetails details,
+  ) async {
+    if (!_isInitialized) return;
+    await _notifications.show(id, title, body, details);
+  }
+
   static Future<void> scheduleAllNotifications() async {
     if (!_isInitialized) return;
     await scheduleDailyReminder();

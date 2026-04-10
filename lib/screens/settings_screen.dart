@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import '../constants.dart';
 import '../providers/settings_provider.dart';
+import '../services/geolocation_service.dart';
 import '../theme.dart';
 
 class SettingsScreen extends StatelessWidget {
@@ -128,7 +129,39 @@ class SettingsScreen extends StatelessWidget {
                       onChanged: (v) async {
                         if (v) {
                           final s = await Permission.locationWhenInUse.request();
-                          if (s.isGranted) settings.toggleGeolocation(true);
+                          if (s.isGranted) {
+                            final isEnabled = await GeolocationService.isLocationServiceEnabled();
+                            if (isEnabled) {
+                              settings.toggleGeolocation(true);
+                              if (context.mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: const Text('✓ Геолокация включена. Вы будете получать уведомления о достопримечательностях рядом.'),
+                                    backgroundColor: AppColors.pink,
+                                    duration: const Duration(seconds: 3),
+                                  ),
+                                );
+                              }
+                            } else {
+                              if (context.mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('Включите службу геолокации в настройках устройства'),
+                                    backgroundColor: Colors.red,
+                                  ),
+                                );
+                              }
+                            }
+                          } else {
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Разрешите доступ к геолокации для получения уведомлений о достопримечательностях'),
+                                  backgroundColor: Colors.red,
+                                ),
+                              );
+                            }
+                          }
                         } else {
                           settings.toggleGeolocation(false);
                         }
@@ -139,7 +172,7 @@ class SettingsScreen extends StatelessWidget {
               ),
               const SizedBox(height: 28),
               Text(
-                'О приложении',
+                'Интересные факты',
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,

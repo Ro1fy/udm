@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../services/app_database.dart';
 import '../services/sound_service.dart';
 import '../services/notification_service.dart';
+import '../services/geolocation_service.dart';
 
 class SettingsProvider extends ChangeNotifier {
   SettingsBox _settings = SettingsBox();
@@ -14,6 +15,15 @@ class SettingsProvider extends ChangeNotifier {
   Future<void> init() async {
     _settings = await AppDatabase.getSettings();
     SoundService.setEnabled(_settings.soundEnabled);
+    
+    if (_settings.geolocationEnabled) {
+      await GeolocationService.startMonitoring(
+        onLocationError: () {
+          // Silently handle error - will be shown when user opens settings
+        },
+      );
+    }
+    
     notifyListeners();
   }
 
@@ -34,6 +44,17 @@ class SettingsProvider extends ChangeNotifier {
   Future<void> toggleGeolocation(bool value) async {
     _settings.geolocationEnabled = value;
     await AppDatabase.updateSettings(_settings);
+    
+    if (value) {
+      await GeolocationService.startMonitoring(
+        onLocationError: () {
+          // Error handling will be done via UI feedback
+        },
+      );
+    } else {
+      await GeolocationService.stopMonitoring();
+    }
+    
     notifyListeners();
   }
 

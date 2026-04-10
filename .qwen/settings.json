@@ -17,7 +17,8 @@
       "Bash(git push)",
       "Bash(git add *)",
       "Bash(select-string *)",
-      "Bash(select-object *)"
+      "Bash(select-object *)",
+      "Bash(rmdir *)"
     ]
   },
   "$version": 3
