@@ -75,3 +75,22 @@ class Topic {
         wordIds: List<String>.from(json['wordIds'] as List),
       );
 }
+
+/// Result of a single question in a game session
+class QuestionResult {
+  final Word word;
+  final bool isCorrect;
+  final String? userAnswer; // For word scramble
+  final String? selectedOption; // For choose translation
+  final bool? userSaysTrue; // For true/false
+  final int points;
+
+  const QuestionResult({
+    required this.word,
+    required this.isCorrect,
+    this.userAnswer,
+    this.selectedOption,
+    this.userSaysTrue,
+    this.points = 10,
+  });
+}

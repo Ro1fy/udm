@@ -115,6 +115,11 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  int getTopicLearnedCount(String topicId) {
+    if (_currentUser == null) return 0;
+    return _currentUser!.wordsLearned[topicId] ?? 0;
+  }
+
   Future<void> updateGameStats(String gameType, int score, int total) async {
     if (_currentUser == null) return;
     final played = Map<String, int>.from(_currentUser!.gameStatsPlayed);

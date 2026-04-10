@@ -72,6 +72,36 @@ class AppTheme {
     return isDark(context) ? const Color(0xFF1A1A1A) : AppColors.white;
   }
 
+  /// Game background color
+  static Color gameBackground(BuildContext context) {
+    return isDark(context) ? AppColors.gameBgDark : AppColors.gameBgLight;
+  }
+
+  /// Game card background color
+  static Color gameCardBackground(BuildContext context) {
+    return isDark(context) ? AppColors.gameCardDark : AppColors.gameCardLight;
+  }
+
+  /// Game text primary color
+  static Color gameTextColor(BuildContext context) {
+    return isDark(context) ? AppColors.gameTextDark : AppColors.gameTextLight;
+  }
+
+  /// Game text secondary color
+  static Color gameTextSecondaryColor(BuildContext context) {
+    return isDark(context) ? AppColors.gameTextSecondaryDark : AppColors.gameTextSecondaryLight;
+  }
+
+  /// Game card border color
+  static Color gameCardBorderColor(BuildContext context) {
+    return isDark(context) ? AppColors.cardBorder : AppColors.cardBorderLight;
+  }
+
+  /// Game card background color (alias)
+  static Color gameCardBg(BuildContext context) {
+    return isDark(context) ? AppColors.cardBg : AppColors.cardBgLight;
+  }
+
   /// Creates a themed input decoration
   static InputDecoration inputDecoration({
     required String labelText,

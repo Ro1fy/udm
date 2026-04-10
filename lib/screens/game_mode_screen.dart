@@ -5,7 +5,9 @@ import '../constants.dart';
 import '../data/vocabulary.dart';
 import '../models/word.dart';
 import '../providers/auth_provider.dart';
+import '../providers/settings_provider.dart';
 import '../services/sound_service.dart';
+import '../theme.dart';
 
 enum GameMode { chooseTranslation, wordScramble, trueFalse }
 
@@ -22,14 +24,17 @@ class _GameModeScreenState extends State<GameModeScreen> {
   List<Word> _questions = [];
   int _currentIndex = 0;
   int _score = 0;
+  List<QuestionResult> _results = [];
   bool _answered = false;
   bool? _isCorrect;
   int? _selectedIndex;
+  String? _selectedOptionText;
   List<String> _scrambledLetters = [];
   String _userAnswer = '';
   bool _tfAnswered = false;
   bool? _tfCorrect;
-  bool _tfShowCorrect = true; // Whether the displayed emoji matches the word
+  bool _tfShowCorrect = true;
+  bool? _tfUserAnswer;
 
   @override
   void initState() {
@@ -74,6 +79,7 @@ class _GameModeScreenState extends State<GameModeScreen> {
       _answered = true;
       _isCorrect = isCorrect;
       _selectedIndex = selectedOption;
+      _selectedOptionText = options[selectedOption];
       if (isCorrect) {
         _score++;
         SoundService.playCorrect();
@@ -81,6 +87,14 @@ class _GameModeScreenState extends State<GameModeScreen> {
         SoundService.playIncorrect();
       }
     });
+
+    // Record the result
+    _results.add(QuestionResult(
+      word: _questions[_currentIndex],
+      isCorrect: isCorrect,
+      selectedOption: options[selectedOption],
+      points: isCorrect ? 10 : 0,
+    ));
 
     _finishQuestion();
   }
@@ -92,6 +106,7 @@ class _GameModeScreenState extends State<GameModeScreen> {
     setState(() {
       _tfAnswered = true;
       _tfCorrect = userSaysTrue == isActuallyTrue;
+      _tfUserAnswer = userSaysTrue;
       if (_tfCorrect!) {
         _score++;
         SoundService.playCorrect();
@@ -99,6 +114,14 @@ class _GameModeScreenState extends State<GameModeScreen> {
         SoundService.playIncorrect();
       }
     });
+
+    // Record the result
+    _results.add(QuestionResult(
+      word: _questions[_currentIndex],
+      isCorrect: _tfCorrect!,
+      userSaysTrue: userSaysTrue,
+      points: _tfCorrect! ? 10 : 0,
+    ));
 
     _finishQuestion();
   }
@@ -112,8 +135,10 @@ class _GameModeScreenState extends State<GameModeScreen> {
           _answered = false;
           _isCorrect = null;
           _selectedIndex = null;
+          _selectedOptionText = null;
           _tfAnswered = false;
           _tfCorrect = null;
+          _tfUserAnswer = null;
         });
         if (widget.gameMode == GameMode.wordScramble) {
           _scrambleCurrentWord();
@@ -134,83 +159,334 @@ class _GameModeScreenState extends State<GameModeScreen> {
           _questions.length,
         );
 
+    final incorrectAnswers = _results.where((r) => !r.isCorrect).length;
+    final totalPoints = _results.fold<int>(0, (sum, r) => sum + r.points);
+    final dialogBg = AppTheme.dialogBackground(context);
+    final textColor = AppTheme.gameTextColor(context);
+    final textSecondaryColor = AppTheme.gameTextSecondaryColor(context);
+
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (_) => AlertDialog(
+      builder: (_) => Dialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: Column(
-          children: [
-            Text(
-              _score == _questions.length ? '🏆' : _score >= 7 ? '🎉' : '💪',
-              style: const TextStyle(fontSize: 64),
-            ),
-            const SizedBox(height: 16),
-            const Text(
-              'Результат',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
+        backgroundColor: dialogBg,
+        child: Container(
+          constraints: const BoxConstraints(maxHeight: 600),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Header with summary
+              Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: AppColors.pink,
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(20),
+                    topRight: Radius.circular(20),
+                  ),
+                ),
+                child: Column(
+                  children: [
+                    Text(
+                      _score == _questions.length
+                          ? '🏆'
+                          : _score >= 7
+                              ? '🎉'
+                              : '💪',
+                      style: const TextStyle(fontSize: 56),
+                    ),
+                    const SizedBox(height: 12),
+                    const Text(
+                      'Результат',
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        _buildStatCard(
+                          '✅',
+                          '$_score',
+                          'Правильно',
+                        ),
+                        _buildStatCard(
+                          '❌',
+                          '$incorrectAnswers',
+                          'Ошибки',
+                        ),
+                        _buildStatCard(
+                          '⭐',
+                          '$totalPoints',
+                          'Баллы',
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              '$_score из ${_questions.length}',
-              style: const TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              '+${_score * 10} XP',
-              style: const TextStyle(
-                fontSize: 20,
-                color: AppColors.pink,
+              // Results list
+              Expanded(
+                child: ListView.builder(
+                  padding: const EdgeInsets.all(16),
+                  itemCount: _results.length,
+                  itemBuilder: (context, index) {
+                    final result = _results[index];
+                    return _buildResultItem(result, index + 1);
+                  },
+                ),
               ),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-              Navigator.of(context).pop();
-            },
-            child: const Text('К играм'),
+              // Action buttons
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                          Navigator.of(context).pop();
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppTheme.gameCardBackground(context),
+                          foregroundColor: textColor,
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            side: BorderSide(
+                              color: AppTheme.gameCardBorderColor(context),
+                              width: 2,
+                            ),
+                          ),
+                          elevation: 2,
+                        ),
+                        child: const Text(
+                          'К ИГРАМ',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 1.2,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                          _restartGame();
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.pink,
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          elevation: 4,
+                          shadowColor: AppColors.pink,
+                        ),
+                        child: const Text(
+                          'ЕЩЁ РАЗ',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 1.2,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-              setState(() {
-                _currentIndex = 0;
-                _score = 0;
-                _answered = false;
-                _isCorrect = null;
-                _selectedIndex = null;
-                _tfAnswered = false;
-                _tfCorrect = null;
-                _tfShowCorrect = true;
-              });
-              _generateQuestions();
-              if (widget.gameMode == GameMode.wordScramble) {
-                _scrambleCurrentWord();
-              } else if (widget.gameMode == GameMode.trueFalse) {
-                _initTrueFalseQuestion();
-              }
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.pink,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildStatCard(String emoji, String value, String label) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.2),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Column(
+        children: [
+          Text(emoji, style: const TextStyle(fontSize: 24)),
+          const SizedBox(height: 4),
+          Text(
+            value,
+            style: const TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
             ),
-            child: const Text('Ещё раз'),
+          ),
+          Text(
+            label,
+            style: const TextStyle(
+              fontSize: 12,
+              color: Colors.white,
+            ),
           ),
         ],
       ),
     );
+  }
+
+  Widget _buildResultItem(QuestionResult result, int number) {
+    final word = result.word;
+    final emoji = _getEmojiForWord(word);
+    final textColor = AppTheme.gameTextColor(context);
+    final textSecondaryColor = AppTheme.gameTextSecondaryColor(context);
+    final cardBgColor = AppTheme.gameCardBackground(context);
+    final cardBorderColor = AppTheme.gameCardBorderColor(context);
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: result.isCorrect
+            ? AppColors.success.withOpacity(0.1)
+            : AppColors.error.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: result.isCorrect
+              ? AppColors.success.withOpacity(0.3)
+              : AppColors.error.withOpacity(0.3),
+          width: 1,
+        ),
+      ),
+      child: Row(
+        children: [
+          // Number and emoji
+          Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              color: result.isCorrect ? AppColors.success : AppColors.error,
+              shape: BoxShape.circle,
+            ),
+            child: Center(
+              child: Text(
+                '$number',
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(width: 12),
+          // Emoji
+          Text(emoji, style: const TextStyle(fontSize: 32)),
+          const SizedBox(width: 12),
+          // Word details
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  word.udmurt,
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: textColor,
+                  ),
+                ),
+                Text(
+                  word.transcription,
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: textSecondaryColor,
+                  ),
+                ),
+                Text(
+                  word.russian,
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: textSecondaryColor,
+                  ),
+                ),
+                // Show user's answer if incorrect
+                if (!result.isCorrect) ...[
+                  const SizedBox(height: 4),
+                  Text(
+                    _getUserAnswerText(result),
+                    style: const TextStyle(
+                      fontSize: 12,
+                      color: AppColors.error,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+          // Points
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            decoration: BoxDecoration(
+              color: result.isCorrect
+                  ? AppColors.success.withOpacity(0.2)
+                  : AppColors.error.withOpacity(0.2),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Text(
+              result.isCorrect ? '+${result.points}' : '0',
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+                color: result.isCorrect ? AppColors.success : AppColors.error,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  String _getUserAnswerText(QuestionResult result) {
+    switch (widget.gameMode) {
+      case GameMode.chooseTranslation:
+        return 'Ваш ответ: ${result.selectedOption ?? "—"}';
+      case GameMode.wordScramble:
+        return 'Ваш ответ: ${result.userAnswer ?? "—"}';
+      case GameMode.trueFalse:
+        if (result.userSaysTrue == null) return '';
+        return 'Ваш ответ: ${result.userSaysTrue! ? "Верно" : "Не верно"}';
+    }
+  }
+
+  void _restartGame() {
+    setState(() {
+      _currentIndex = 0;
+      _score = 0;
+      _results = [];
+      _answered = false;
+      _isCorrect = null;
+      _selectedIndex = null;
+      _selectedOptionText = null;
+      _tfAnswered = false;
+      _tfCorrect = null;
+      _tfUserAnswer = null;
+      _tfShowCorrect = true;
+    });
+    _generateQuestions();
+    if (widget.gameMode == GameMode.wordScramble) {
+      _scrambleCurrentWord();
+    } else if (widget.gameMode == GameMode.trueFalse) {
+      _initTrueFalseQuestion();
+    }
   }
 
   String _getGameTypeName() {
@@ -250,11 +526,19 @@ class _GameModeScreenState extends State<GameModeScreen> {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
+    final isDark = AppTheme.isDark(context);
+    final bgColor = AppTheme.gameBackground(context);
+    final textColor = AppTheme.gameTextColor(context);
+    final textSecondaryColor = AppTheme.gameTextSecondaryColor(context);
+    final cardBgColor = AppTheme.gameCardBackground(context);
+    final cardBorderColor = AppTheme.gameCardBorderColor(context);
+    final progressBgColor = AppTheme.progressBackground(context);
+
     return Scaffold(
       body: Container(
         width: double.infinity,
         height: double.infinity,
-        decoration: const BoxDecoration(color: AppColors.black),
+        decoration: BoxDecoration(color: bgColor),
         child: SafeArea(
           child: Column(
             children: [
@@ -264,16 +548,16 @@ class _GameModeScreenState extends State<GameModeScreen> {
                 child: Row(
                   children: [
                     IconButton(
-                      icon: const Icon(Icons.arrow_back),
+                      icon: Icon(Icons.arrow_back, color: textColor),
                       onPressed: () => Navigator.of(context).pop(),
                     ),
-                    const Expanded(
+                    Expanded(
                       child: Text(
                         'Игра',
                         style: TextStyle(
                           fontSize: 22,
                           fontWeight: FontWeight.bold,
-                          color: AppColors.textPrimary,
+                          color: textColor,
                         ),
                         textAlign: TextAlign.center,
                       ),
@@ -301,7 +585,7 @@ class _GameModeScreenState extends State<GameModeScreen> {
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: LinearProgressIndicator(
                   value: (_currentIndex + 1) / _questions.length,
-                  backgroundColor: Colors.white,
+                  backgroundColor: progressBgColor,
                   valueColor:
                       const AlwaysStoppedAnimation<Color>(AppColors.pink),
                 ),
@@ -309,8 +593,8 @@ class _GameModeScreenState extends State<GameModeScreen> {
               const SizedBox(height: 8),
               Text(
                 '${_currentIndex + 1} / ${_questions.length}',
-                style: const TextStyle(
-                  color: AppColors.textSecondary,
+                style: TextStyle(
+                  color: textSecondaryColor,
                   fontSize: 14,
                 ),
               ),
@@ -343,6 +627,9 @@ class _GameModeScreenState extends State<GameModeScreen> {
   Widget _buildChooseTranslation() {
     final word = _questions[_currentIndex];
     final options = _generateOptions(word);
+    final cardBgColor = AppTheme.gameCardBackground(context);
+    final textColor = AppTheme.gameTextColor(context);
+    final textSecondaryColor = AppTheme.gameTextSecondaryColor(context);
 
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -384,26 +671,29 @@ class _GameModeScreenState extends State<GameModeScreen> {
           ),
         ),
         const SizedBox(height: 28),
-        const Text(
+        Text(
           'Выберите правильный перевод',
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,
-            color: AppColors.white,
+            color: textColor,
           ),
         ),
         const SizedBox(height: 24),
         ...List.generate(4, (index) {
-          Color bgColor = AppColors.cardDark;
-          Color textColor = AppColors.white;
+          Color bgColor = cardBgColor;
+          Color textColorButton = textColor;
+          Color borderColor = AppTheme.gameCardBorderColor(context);
 
           if (_answered) {
             if (options[index] == word.russian) {
               bgColor = AppColors.success;
-              textColor = AppColors.black;
+              textColorButton = AppColors.white;
+              borderColor = AppColors.success;
             } else if (_selectedIndex == index && !_isCorrect!) {
               bgColor = AppColors.error;
-              textColor = AppColors.black;
+              textColorButton = AppColors.white;
+              borderColor = AppColors.error;
             }
           }
 
@@ -413,10 +703,11 @@ class _GameModeScreenState extends State<GameModeScreen> {
               onPressed: _answered ? null : () => _checkAnswer(index, options),
               style: ElevatedButton.styleFrom(
                 backgroundColor: bgColor,
-                foregroundColor: textColor,
+                foregroundColor: textColorButton,
                 padding: const EdgeInsets.symmetric(vertical: 18),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16),
+                  side: BorderSide(color: borderColor, width: 1),
                 ),
                 minimumSize: const Size(double.infinity, 56),
               ),
@@ -446,6 +737,9 @@ class _GameModeScreenState extends State<GameModeScreen> {
 
   Widget _buildWordScramble() {
     final word = _questions[_currentIndex];
+    final textColor = AppTheme.gameTextColor(context);
+    final textSecondaryColor = AppTheme.gameTextSecondaryColor(context);
+    final cardBgColor = AppTheme.gameCardBackground(context);
 
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -465,20 +759,20 @@ class _GameModeScreenState extends State<GameModeScreen> {
           ),
         ),
         const SizedBox(height: 24),
-        const Text(
+        Text(
           'Собери слово',
           style: TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.bold,
-            color: AppColors.textPrimary,
+            color: textColor,
           ),
         ),
         const SizedBox(height: 8),
         Text(
           word.russian,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 18,
-            color: AppColors.textSecondary,
+            color: textSecondaryColor,
           ),
         ),
         const SizedBox(height: 24),
@@ -486,8 +780,12 @@ class _GameModeScreenState extends State<GameModeScreen> {
         Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: cardBgColor,
             borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: AppTheme.gameCardBorderColor(context),
+              width: 1,
+            ),
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withOpacity(0.05),
@@ -501,7 +799,7 @@ class _GameModeScreenState extends State<GameModeScreen> {
               fontSize: 28,
               fontWeight: FontWeight.bold,
               color: _userAnswer.isEmpty
-                  ? AppColors.textSecondary
+                  ? textSecondaryColor
                   : AppColors.pink,
               letterSpacing: 4,
             ),
@@ -547,7 +845,7 @@ class _GameModeScreenState extends State<GameModeScreen> {
                     style: TextStyle(
                       fontSize: 22,
                       fontWeight: FontWeight.bold,
-                      color: isUsed ? AppColors.textSecondary : Colors.white,
+                      color: isUsed ? textSecondaryColor : Colors.white,
                     ),
                   ),
                 ),
@@ -602,6 +900,14 @@ class _GameModeScreenState extends State<GameModeScreen> {
       SoundService.playIncorrect();
     }
 
+    // Record the result
+    _results.add(QuestionResult(
+      word: _questions[_currentIndex],
+      isCorrect: isCorrect,
+      userAnswer: _userAnswer,
+      points: isCorrect ? 10 : 0,
+    ));
+
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(isCorrect ? '✅ Правильно!' : '❌ Неправильно. Ответ: $correctWord'),
@@ -618,6 +924,8 @@ class _GameModeScreenState extends State<GameModeScreen> {
     final word = _questions[_currentIndex];
     final emoji = _getEmojiForWord(word);
     final displayedEmoji = _tfShowCorrect ? emoji : _getRandomEmoji(word);
+    final textColor = AppTheme.gameTextColor(context);
+    final textSecondaryColor = AppTheme.gameTextSecondaryColor(context);
 
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -626,8 +934,12 @@ class _GameModeScreenState extends State<GameModeScreen> {
           width: 160,
           height: 160,
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: AppTheme.gameCardBackground(context),
             shape: BoxShape.circle,
+            border: Border.all(
+              color: AppTheme.gameCardBorderColor(context),
+              width: 1,
+            ),
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withOpacity(0.1),
@@ -645,26 +957,26 @@ class _GameModeScreenState extends State<GameModeScreen> {
         const SizedBox(height: 32),
         Text(
           word.udmurt,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 32,
             fontWeight: FontWeight.bold,
-            color: AppColors.textPrimary,
+            color: textColor,
           ),
         ),
         const SizedBox(height: 8),
         Text(
           word.transcription,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 16,
-            color: AppColors.textSecondary,
+            color: textSecondaryColor,
           ),
         ),
         const SizedBox(height: 32),
-        const Text(
+        Text(
           'Это слово соответствует картинке?',
           style: TextStyle(
             fontSize: 18,
-            color: AppColors.textSecondary,
+            color: textSecondaryColor,
           ),
           textAlign: TextAlign.center,
         ),
@@ -677,8 +989,10 @@ class _GameModeScreenState extends State<GameModeScreen> {
                     ? null
                     : () => _checkTrueFalse(true),
                 icon: const Icon(Icons.check, size: 32),
-                label: const Text('Верно',
-                    style: TextStyle(fontSize: 20)),
+                label: const Text(
+                    'Верно',
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: _tfAnswered && _tfCorrect == true
                       ? AppColors.success
@@ -700,8 +1014,10 @@ class _GameModeScreenState extends State<GameModeScreen> {
                     ? null
                     : () => _checkTrueFalse(false),
                 icon: const Icon(Icons.close, size: 32),
-                label: const Text('Не верно',
-                    style: TextStyle(fontSize: 20)),
+                label: const Text(
+                    'Не верно',
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: _tfAnswered && _tfCorrect == false
                       ? AppColors.error

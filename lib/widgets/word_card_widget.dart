@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../constants.dart';
 import '../models/word.dart';
+import '../theme.dart';
 
 class WordCardWidget extends StatefulWidget {
   final Word word;
@@ -38,12 +39,27 @@ class _WordCardWidgetState extends State<WordCardWidget> {
   }
 
   Widget _buildFront() {
+    final isDark = AppTheme.isDark(context);
+    final cardBg = isDark ? AppColors.cardDark : AppColors.cardBgLight;
+    final cardBorder = isDark ? AppColors.cardBorder : AppColors.cardBorderLight;
+    final iconBg = isDark ? const Color(0xFF2A2A2A) : AppColors.pink.withOpacity(0.1);
+    final transcriptionBg = isDark ? const Color(0xFF2A2A2A) : AppColors.pink.withOpacity(0.08);
+    final textColor = isDark ? AppColors.white : AppColors.textOnLight;
+    final textSecondary = isDark ? AppColors.textSecondary : AppColors.textSecondaryLight;
+
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
-        color: AppColors.cardDark,
+        color: cardBg,
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: AppColors.cardBorder),
+        border: Border.all(color: cardBorder),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(isDark ? 0.3 : 0.08),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -52,20 +68,20 @@ class _WordCardWidgetState extends State<WordCardWidget> {
             width: 110,
             height: 110,
             decoration: BoxDecoration(
-              color: const Color(0xFF2A2A2A),
+              color: iconBg,
               shape: BoxShape.circle,
             ),
             child: Center(
-              child: Text(_getEmoji(), style: const TextStyle(fontSize: 64)),
+              child: Text(_getEmoji(), style: TextStyle(fontSize: 64)),
             ),
           ),
           const SizedBox(height: 28),
           Text(
             widget.word.udmurt,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 32,
               fontWeight: FontWeight.bold,
-              color: AppColors.white,
+              color: textColor,
             ),
             textAlign: TextAlign.center,
           ),
@@ -73,18 +89,18 @@ class _WordCardWidgetState extends State<WordCardWidget> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
             decoration: BoxDecoration(
-              color: const Color(0xFF2A2A2A),
+              color: transcriptionBg,
               borderRadius: BorderRadius.circular(18),
             ),
             child: Text(
               widget.word.transcription,
-              style: const TextStyle(fontSize: 16, color: AppColors.textSecondary),
+              style: TextStyle(fontSize: 16, color: textSecondary),
             ),
           ),
           const SizedBox(height: 28),
-          const Text(
+          Text(
             'Нажмите, чтобы увидеть перевод',
-            style: TextStyle(fontSize: 13, color: AppColors.textSecondary),
+            style: TextStyle(fontSize: 13, color: textSecondary),
           ),
         ],
       ),
@@ -92,12 +108,31 @@ class _WordCardWidgetState extends State<WordCardWidget> {
   }
 
   Widget _buildBack() {
+    final isDark = AppTheme.isDark(context);
+    final cardBg = isDark ? AppColors.cardDark : AppColors.cardBgLight;
+    final cardBorder = isDark ? AppColors.cardBorder : AppColors.cardBorderLight;
+    final iconBg = isDark ? const Color(0xFF2A2A2A) : AppColors.pink.withOpacity(0.1);
+    final transcriptionBg = isDark ? const Color(0xFF2A2A2A) : AppColors.pink.withOpacity(0.08);
+    final textColor = isDark ? AppColors.white : AppColors.textOnLight;
+    final textSecondary = isDark ? AppColors.textSecondary : AppColors.textSecondaryLight;
+    final buttonBg = isDark ? AppColors.white : AppColors.pink;
+    final buttonText = isDark ? AppColors.black : AppColors.white;
+    final learnedBg = isDark ? const Color(0xFF333333) : AppColors.pink.withOpacity(0.3);
+    final learnedText = isDark ? AppColors.textSecondary : AppColors.pink;
+
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
-        color: AppColors.cardDark,
+        color: cardBg,
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: AppColors.cardBorder),
+        border: Border.all(color: cardBorder),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(isDark ? 0.3 : 0.08),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -106,7 +141,7 @@ class _WordCardWidgetState extends State<WordCardWidget> {
             width: 90,
             height: 90,
             decoration: BoxDecoration(
-              color: const Color(0xFF2A2A2A),
+              color: iconBg,
               shape: BoxShape.circle,
             ),
             child: Center(
@@ -116,19 +151,19 @@ class _WordCardWidgetState extends State<WordCardWidget> {
           const SizedBox(height: 22),
           Text(
             widget.word.russian,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 28,
               fontWeight: FontWeight.bold,
-              color: AppColors.white,
+              color: textColor,
             ),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 10),
           Text(
             widget.word.udmurt,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 20,
-              color: AppColors.white,
+              color: textColor,
               fontStyle: FontStyle.italic,
             ),
           ),
@@ -136,32 +171,42 @@ class _WordCardWidgetState extends State<WordCardWidget> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
             decoration: BoxDecoration(
-              color: const Color(0xFF2A2A2A),
+              color: transcriptionBg,
               borderRadius: BorderRadius.circular(18),
             ),
             child: Text(
               widget.word.transcription,
-              style: const TextStyle(fontSize: 15, color: AppColors.textSecondary),
+              style: TextStyle(fontSize: 15, color: textSecondary),
             ),
           ),
           const SizedBox(height: 28),
           ElevatedButton.icon(
             onPressed: widget.onLearned,
-            icon: Icon(widget.onLearned != null ? Icons.check_circle : Icons.check),
-            label: Text(widget.onLearned != null ? 'Изучил! +10 XP' : '✓ Изучено'),
+            icon: Icon(
+              widget.onLearned != null ? Icons.check_circle : Icons.check_circle_outline,
+              color: widget.onLearned != null ? null : learnedText,
+            ),
+            label: Text(
+              widget.onLearned != null ? 'Изучил! +10 XP' : 'Изучено',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
             style: ElevatedButton.styleFrom(
-              backgroundColor: widget.onLearned != null ? AppColors.white : const Color(0xFF333333),
-              foregroundColor: widget.onLearned != null ? AppColors.black : AppColors.textSecondary,
+              backgroundColor: widget.onLearned != null ? buttonBg : learnedBg,
+              foregroundColor: widget.onLearned != null ? buttonText : learnedText,
               padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 14),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(14),
               ),
+              elevation: widget.onLearned != null ? 4 : 0,
             ),
           ),
           const SizedBox(height: 14),
-          const Text(
+          Text(
             'Нажмите, чтобы вернуться',
-            style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
+            style: TextStyle(fontSize: 12, color: textSecondary),
           ),
         ],
       ),

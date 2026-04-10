@@ -138,6 +138,8 @@ class _TopicWordsScreenState extends State<TopicWordsScreen> {
   late List<Word> _words;
   int _currentIndex = 0;
   bool _isLearned = false;
+  int _sessionLearnedCount = 0;
+  Set<String> _learnedWordIds = {};
 
   @override
   void initState() {
@@ -151,7 +153,7 @@ class _TopicWordsScreenState extends State<TopicWordsScreen> {
     if (_currentIndex < _words.length - 1) {
       setState(() {
         _currentIndex++;
-        _isLearned = false;
+        _isLearned = _learnedWordIds.contains(_words[_currentIndex].id);
       });
     }
   }
@@ -160,24 +162,349 @@ class _TopicWordsScreenState extends State<TopicWordsScreen> {
     if (_currentIndex > 0) {
       setState(() {
         _currentIndex--;
-        _isLearned = false;
+        _isLearned = _learnedWordIds.contains(_words[_currentIndex].id);
       });
     }
   }
 
   void _markLearned() {
     if (_isLearned) return;
-    setState(() => _isLearned = true);
+    
+    // Add to learned set
+    _learnedWordIds.add(_words[_currentIndex].id);
+    
+    setState(() {
+      _isLearned = true;
+      _sessionLearnedCount++;
+    });
+    
     context.read<AuthProvider>().markWordLearned(widget.topic.id);
     context.read<AuthProvider>().addXP(10);
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: const Text('🎉 +10 XP! Слово изучено!'),
-        backgroundColor: AppColors.success,
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+    
+    // Show notification from top with animation
+    final overlay = Overlay.of(context);
+    final overlayEntry = OverlayEntry(
+      builder: (context) => Positioned(
+        top: MediaQuery.of(context).padding.top + 10,
+        left: 20,
+        right: 20,
+        child: Material(
+          color: Colors.transparent,
+          child: TweenAnimationBuilder<double>(
+            duration: const Duration(milliseconds: 400),
+            tween: Tween(begin: -1.0, end: 0.0),
+            curve: Curves.easeOutBack,
+            builder: (context, value, child) {
+              return Transform.translate(
+                offset: Offset(0, value * 100),
+                child: Opacity(
+                  opacity: value < -0.5 ? (value + 1) * 2 : 1.0,
+                  child: child,
+                ),
+              );
+            },
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+              decoration: BoxDecoration(
+                color: AppColors.success,
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.success.withOpacity(0.4),
+                    blurRadius: 12,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: const [
+                  Icon(Icons.star, color: Colors.white, size: 24),
+                  SizedBox(width: 12),
+                  Text(
+                    '+10 XP! Слово изучено!',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
       ),
     );
+
+    overlay.insert(overlayEntry);
+    
+    // Auto-dismiss after 2 seconds with fade out
+    Future.delayed(const Duration(seconds: 2), () {
+      overlayEntry.markNeedsBuild();
+      Future.delayed(const Duration(milliseconds: 300), () {
+        overlayEntry.remove();
+      });
+    });
+
+    // Check if all words are learned in current session
+    if (_sessionLearnedCount >= _words.length) {
+      Future.delayed(const Duration(milliseconds: 500), () {
+        if (mounted) {
+          _showCompletionDialog();
+        }
+      });
+    }
+  }
+
+  void _showCompletionDialog() {
+    final totalWords = _words.length;
+    final dialogBg = AppTheme.dialogBackground(context);
+    final textColor = AppTheme.gameTextColor(context);
+    final textSecondaryColor = AppTheme.gameTextSecondaryColor(context);
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => Dialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        backgroundColor: dialogBg,
+        insetPadding: const EdgeInsets.symmetric(horizontal: 20),
+        child: Container(
+          constraints: const BoxConstraints(maxWidth: 400),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Header with celebration - full width pink background
+              ClipRRect(
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(20),
+                  topRight: Radius.circular(20),
+                ),
+                child: Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(24),
+                  decoration: const BoxDecoration(
+                    color: AppColors.pink,
+                  ),
+                  child: Column(
+                    children: [
+                      const Text(
+                        '🎓',
+                        style: TextStyle(fontSize: 72),
+                      ),
+                      const SizedBox(height: 16),
+                      const Text(
+                        'Поздравляем!',
+                        style: TextStyle(
+                          fontSize: 28,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      Text(
+                        'Ты изучил все слова по теме',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.white.withOpacity(0.9),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        '"${widget.topic.title}"',
+                        style: const TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              // Stats section
+              Padding(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        _buildStatCard(
+                          '📚',
+                          '$totalWords',
+                          'Всего слов',
+                          textColor,
+                          textSecondaryColor,
+                        ),
+                        _buildStatCard(
+                          '✅',
+                          '$totalWords',
+                          'Изучено',
+                          textColor,
+                          textSecondaryColor,
+                        ),
+                        _buildStatCard(
+                          '⭐',
+                          '+${totalWords * 10}',
+                          'XP получено',
+                          textColor,
+                          textSecondaryColor,
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: AppColors.success.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: AppColors.success.withOpacity(0.3),
+                        ),
+                      ),
+                      child: Row(
+                        children: [
+                          const Icon(
+                            Icons.emoji_events,
+                            color: AppColors.success,
+                            size: 32,
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Text(
+                              'Отличная работа! Ты стал ближе к изучению удмуртского языка!',
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: textColor,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              // Action buttons
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                          Navigator.of(context).pop();
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppTheme.gameCardBackground(context),
+                          foregroundColor: textColor,
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            side: BorderSide(
+                              color: AppTheme.gameCardBorderColor(context),
+                              width: 2,
+                            ),
+                          ),
+                          elevation: 2,
+                        ),
+                        child: const Text(
+                          'ВЫЙТИ',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 1.2,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                          _resetProgress();
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.pink,
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          elevation: 4,
+                          shadowColor: AppColors.pink,
+                        ),
+                        child: const Text(
+                          'ПОВТОРИТЬ',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 1.2,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildStatCard(
+    String emoji,
+    String value,
+    String label,
+    Color textColor,
+    Color textSecondaryColor,
+  ) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: BoxDecoration(
+        color: AppColors.pink.withOpacity(0.05),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Column(
+        children: [
+          Text(emoji, style: const TextStyle(fontSize: 28)),
+          const SizedBox(height: 6),
+          Text(
+            value,
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: textColor,
+            ),
+          ),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 11,
+              color: textSecondaryColor,
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _resetProgress() {
+    setState(() {
+      _currentIndex = 0;
+      _isLearned = false;
+      _sessionLearnedCount = 0;
+      _learnedWordIds = {};
+    });
   }
 
   @override
