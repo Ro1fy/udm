@@ -25,6 +25,7 @@ class _GameModeScreenState extends State<GameModeScreen> {
   int _currentIndex = 0;
   int _score = 0;
   List<QuestionResult> _results = [];
+  List<String>? _currentOptions;
   bool _answered = false;
   bool? _isCorrect;
   int? _selectedIndex;
@@ -35,6 +36,7 @@ class _GameModeScreenState extends State<GameModeScreen> {
   bool? _tfCorrect;
   bool _tfShowCorrect = true;
   bool? _tfUserAnswer;
+  String _tfDisplayedEmoji = '';
 
   @override
   void initState() {
@@ -48,8 +50,13 @@ class _GameModeScreenState extends State<GameModeScreen> {
 
   void _initTrueFalseQuestion() {
     if (widget.gameMode == GameMode.trueFalse) {
+      final showCorrect = Random().nextBool();
+      final word = _questions[_currentIndex];
+      final correctEmoji = _getEmojiForWord(word);
+      final randomEmoji = _getRandomEmoji(word);
       setState(() {
-        _tfShowCorrect = Random().nextBool();
+        _tfShowCorrect = showCorrect;
+        _tfDisplayedEmoji = showCorrect ? correctEmoji : randomEmoji;
       });
     }
   }
@@ -80,6 +87,7 @@ class _GameModeScreenState extends State<GameModeScreen> {
       _isCorrect = isCorrect;
       _selectedIndex = selectedOption;
       _selectedOptionText = options[selectedOption];
+      _currentOptions = options; // Store options so they don't reshuffle
       if (isCorrect) {
         _score++;
         SoundService.playCorrect();
@@ -123,6 +131,7 @@ class _GameModeScreenState extends State<GameModeScreen> {
       points: _tfCorrect! ? 10 : 0,
     ));
 
+    // DO NOT reset _tfShowCorrect here - keep the same emoji visible
     _finishQuestion();
   }
 
@@ -136,9 +145,11 @@ class _GameModeScreenState extends State<GameModeScreen> {
           _isCorrect = null;
           _selectedIndex = null;
           _selectedOptionText = null;
+          _currentOptions = null;
           _tfAnswered = false;
           _tfCorrect = null;
           _tfUserAnswer = null;
+          _tfDisplayedEmoji = '';
         });
         if (widget.gameMode == GameMode.wordScramble) {
           _scrambleCurrentWord();
@@ -472,6 +483,7 @@ class _GameModeScreenState extends State<GameModeScreen> {
       _currentIndex = 0;
       _score = 0;
       _results = [];
+      _currentOptions = null;
       _answered = false;
       _isCorrect = null;
       _selectedIndex = null;
@@ -480,6 +492,7 @@ class _GameModeScreenState extends State<GameModeScreen> {
       _tfCorrect = null;
       _tfUserAnswer = null;
       _tfShowCorrect = true;
+      _tfDisplayedEmoji = '';
     });
     _generateQuestions();
     if (widget.gameMode == GameMode.wordScramble) {
@@ -653,7 +666,7 @@ class _GameModeScreenState extends State<GameModeScreen> {
 
   Widget _buildChooseTranslation() {
     final word = _questions[_currentIndex];
-    final options = _generateOptions(word);
+    final options = _currentOptions ?? _generateOptions(word);
     final cardBgColor = AppTheme.gameCardBackground(context);
     final textColor = AppTheme.gameTextColor(context);
     final textSecondaryColor = AppTheme.gameTextSecondaryColor(context);
@@ -949,8 +962,6 @@ class _GameModeScreenState extends State<GameModeScreen> {
 
   Widget _buildTrueFalse() {
     final word = _questions[_currentIndex];
-    final emoji = _getEmojiForWord(word);
-    final displayedEmoji = _tfShowCorrect ? emoji : _getRandomEmoji(word);
     final textColor = AppTheme.gameTextColor(context);
     final textSecondaryColor = AppTheme.gameTextSecondaryColor(context);
 
@@ -976,7 +987,7 @@ class _GameModeScreenState extends State<GameModeScreen> {
           ),
           child: Center(
             child: Text(
-              displayedEmoji,
+              _tfDisplayedEmoji,
               style: const TextStyle(fontSize: 80),
             ),
           ),

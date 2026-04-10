@@ -62,6 +62,22 @@ class _LoginScreenState extends State<LoginScreen>
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(builder: (_) => const MainMenuScreen()),
       );
+    } else if (mounted) {
+      // Show error message if login/register failed
+      final errorMsg = auth.errorMessage;
+      if (errorMsg != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(errorMsg),
+            backgroundColor: AppColors.pink,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            duration: const Duration(seconds: 3),
+          ),
+        );
+      }
     }
   }
 
@@ -206,8 +222,9 @@ class _LoginScreenState extends State<LoginScreen>
                               fillColor: const Color(0xFF1A1A1A),
                             ),
                             validator: (v) {
-                              if (v == null || v.trim().isEmpty)
+                              if (v == null || v.trim().isEmpty) {
                                 return 'Введите email';
+                              }
                               if (!v.contains('@')) return 'Некорректный email';
                               return null;
                             },
@@ -254,8 +271,9 @@ class _LoginScreenState extends State<LoginScreen>
                               fillColor: const Color(0xFF1A1A1A),
                             ),
                             validator: (v) {
-                              if (v == null || v.length < 4)
+                              if (v == null || v.length < 4) {
                                 return 'Минимум 4 символа';
+                              }
                               return null;
                             },
                           ),
@@ -263,45 +281,61 @@ class _LoginScreenState extends State<LoginScreen>
                           Consumer<AuthProvider>(
                             builder: (context, auth, child) {
                               final errorMsg = auth.errorMessage;
-                              if (errorMsg != null)
-                                Padding(
-                                  padding: const EdgeInsets.only(bottom: 12),
-                                  child: Text(
-                                    errorMsg,
-                                    style: const TextStyle(
-                                      color: AppColors.pink,
-                                      fontSize: 13,
-                                    ),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                );
-                              return ElevatedButton(
-                                onPressed: auth.isLoading ? null : _submit,
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: AppColors.pink,
-                                  foregroundColor: AppColors.white,
-                                  padding:
-                                      const EdgeInsets.symmetric(vertical: 17),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(14),
-                                  ),
-                                ),
-                                child: auth.isLoading
-                                    ? const SizedBox(
-                                        height: 22,
-                                        width: 22,
-                                        child: CircularProgressIndicator(
-                                          color: AppColors.white,
-                                          strokeWidth: 2,
-                                        ),
-                                      )
-                                    : Text(
-                                        _isLoginMode ? 'Войти' : 'Создать аккаунт',
-                                        style: const TextStyle(
-                                          fontSize: 17,
-                                          fontWeight: FontWeight.bold,
+                              return Column(
+                                children: [
+                                  if (errorMsg != null) ...[
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 14, vertical: 10),
+                                      margin: const EdgeInsets.only(bottom: 12),
+                                      decoration: BoxDecoration(
+                                        color: AppColors.pink.withOpacity(0.1),
+                                        borderRadius: BorderRadius.circular(10),
+                                        border: Border.all(
+                                          color: AppColors.pink.withOpacity(0.3),
                                         ),
                                       ),
+                                      child: Text(
+                                        errorMsg,
+                                        style: const TextStyle(
+                                          color: AppColors.pink,
+                                          fontSize: 13,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ),
+                                  ],
+                                  ElevatedButton(
+                                    onPressed: auth.isLoading ? null : _submit,
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: AppColors.pink,
+                                      foregroundColor: AppColors.white,
+                                      padding:
+                                          const EdgeInsets.symmetric(vertical: 18, horizontal: 24),
+                                      minimumSize: const Size(double.infinity, 56),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(14),
+                                      ),
+                                    ),
+                                    child: auth.isLoading
+                                        ? const SizedBox(
+                                            height: 22,
+                                            width: 22,
+                                            child: CircularProgressIndicator(
+                                              color: AppColors.white,
+                                              strokeWidth: 2,
+                                            ),
+                                          )
+                                        : Text(
+                                            _isLoginMode ? 'Войти' : 'Создать аккаунт',
+                                            style: const TextStyle(
+                                              fontSize: 17,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                  ),
+                                ],
                               );
                             },
                           ),

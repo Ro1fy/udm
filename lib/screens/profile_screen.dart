@@ -13,8 +13,62 @@ class ProfileScreen extends StatelessWidget {
     final auth = context.watch<AuthProvider>();
     final user = auth.currentUser;
 
-    if (user == null) {
-      return const Center(child: CircularProgressIndicator());
+    if (!auth.isLoggedIn || user == null) {
+      return Container(
+        width: double.infinity,
+        height: double.infinity,
+        color: AppTheme.backgroundColor(context),
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Text(
+                  '👤',
+                  style: TextStyle(fontSize: 80),
+                ),
+                const SizedBox(height: 24),
+                Text(
+                  'Аккаунт не найден',
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: AppTheme.textColor(context),
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  'У вас нет аккаунта. Пожалуйста, войдите в систему или зарегистрируйтесь.',
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: AppTheme.textSecondary(context),
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 32),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(context).pushAndRemoveUntil(
+                      MaterialPageRoute(builder: (_) => const LoginScreen()),
+                      (route) => false,
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.pink,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                  ),
+                  child: const Text('Войти / Зарегистрироваться'),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
     }
 
     return Container(
