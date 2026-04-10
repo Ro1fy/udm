@@ -215,16 +215,43 @@ class _WordCardWidgetState extends State<WordCardWidget> {
 
   String _getEmoji() {
     const m = {
-      'hello': '🤝', 'goodbye': '👋', 'thank_you': '🙏', 'please': '🤲',
-      'how_are_you': '😊', 'good_morning': '🌅', 'good_night': '🌙', 'nice_to_meet': '😃',
+      // Greetings
+      'hello_formal': '🤝', 'hello_informal': '🙋', 'greeting': '👋',
+      'goodbye': '👋', 'thank_you': '🙏', 'please': '🤲',
+      'how_are_you': '😊', 'good_morning': '🌅', 'good_night': '🌙',
+      'nice_to_meet': '😃', 'good_day': '☀️', 'good_evening': '🌆',
+      // Numbers
       'one': '1️⃣', 'two': '2️⃣', 'three': '3️⃣', 'four': '4️⃣', 'five': '5️⃣',
       'six': '6️⃣', 'seven': '7️⃣', 'eight': '8️⃣', 'nine': '9️⃣', 'ten': '🔟',
+      // Wild animals
       'bear': '🐻', 'wolf': '🐺', 'fox': '🦊', 'hare': '🐇', 'moose': '🦌',
-      'squirrel': '🐿️', 'hedgehog': '🦔', 'eagle': '🦅',
+      'squirrel': '🐿️', 'hedgehog': '🦔', 'eagle': '🦅', 'boar': '🐗',
+      // Domestic animals
       'cow': '🐄', 'horse': '🐴', 'sheep': '🐑', 'pig': '🐖', 'chicken': '🐓',
-      'dog': '🐕', 'cat': '🐈', 'goose': '🪿',
+      'dog': '🐕', 'cat': '🐈', 'goose': '🪿', 'ram': '🐏', 'bull': '🐂',
+      'goat': '🐐',
+      // Food
+      'bread': '🍞', 'milk': '🥛', 'porridge': '🥣', 'pelmeni': '🥟',
+      'soup': '🍲', 'egg': '🥚', 'meat': '🥩', 'butter': '🧈',
+      'food': '🍽️', 'pancake': '🥞',
+      // Clothes
+      'dress_shirt': '👔', 'apron': '🥼', 'scarf': '🧣',
+      // Family
       'mother': '👩', 'father': '👨', 'sister': '👧', 'brother': '👦',
       'grandmother': '👵', 'grandfather': '👴', 'son': '🧒', 'daughter': '👧',
+      'parents': '👨‍👩', 'uncle': '👨', 'spouse': '💑', 'wife': '👰',
+      // Vegetables
+      'onion': '🧅', 'cabbage': '🥬', 'beet': '🟣', 'carrot': '🥕',
+      'cucumber': '🥒',
+      // Colors
+      'white': '⚪', 'black': '⚫', 'blue': '🔵', 'yellow': '🟡',
+      'green': '🟢', 'pink': '🩷', 'red': '🔴',
+      // Berries
+      'viburnum': '🔴', 'lingonberry': '🍒', 'strawberry': '🍓',
+      'strawberry_garden': '🍓', 'cranberry': '🫐', 'blueberry': '🫐',
+      // Phrases
+      'angry': '😠', 'happy': '😊', 'scared': '😨', 'love': '❤️',
+      'lets_meet': '🤝', 'my_name': '🗣️', 'dont_understand': '❓',
     };
     return m[widget.word.id] ?? '📖';
   }
