@@ -1,3 +1,4 @@
+import 'package:flip_card/flip_card.dart';
 import 'package:flutter/material.dart';
 import '../constants.dart';
 import '../models/word.dart';
@@ -7,11 +8,7 @@ class WordCardWidget extends StatefulWidget {
   final Word word;
   final VoidCallback? onLearned;
 
-  const WordCardWidget({
-    super.key,
-    required this.word,
-    this.onLearned,
-  });
+  const WordCardWidget({super.key, required this.word, this.onLearned});
 
   @override
   State<WordCardWidget> createState() => _WordCardWidgetState();
@@ -28,24 +25,30 @@ class _WordCardWidgetState extends State<WordCardWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: _flipCard,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 400),
-        curve: Curves.easeInOut,
-        child: _isFlipped ? _buildBack() : _buildFront(),
-      ),
+    return FlipCard(
+      speed: 400,
+      onFlip: _flipCard,
+      front: _buildFront(),
+      back: _buildBack(),
     );
   }
 
   Widget _buildFront() {
     final isDark = AppTheme.isDark(context);
     final cardBg = isDark ? AppColors.cardDark : AppColors.cardBgLight;
-    final cardBorder = isDark ? AppColors.cardBorder : AppColors.cardBorderLight;
-    final iconBg = isDark ? const Color(0xFF2A2A2A) : AppColors.pink.withOpacity(0.1);
-    final transcriptionBg = isDark ? const Color(0xFF2A2A2A) : AppColors.pink.withOpacity(0.08);
+    final cardBorder = isDark
+        ? AppColors.cardBorder
+        : AppColors.cardBorderLight;
+    final iconBg = isDark
+        ? const Color(0xFF2A2A2A)
+        : AppColors.primary.withValues(alpha: 0.1);
+    final transcriptionBg = isDark
+        ? const Color(0xFF2A2A2A)
+        : AppColors.primary.withValues(alpha: 0.08);
     final textColor = isDark ? AppColors.white : AppColors.textOnLight;
-    final textSecondary = isDark ? AppColors.textSecondary : AppColors.textSecondaryLight;
+    final textSecondary = isDark
+        ? AppColors.textSecondary
+        : AppColors.textSecondaryLight;
 
     return Container(
       width: double.infinity,
@@ -55,7 +58,7 @@ class _WordCardWidgetState extends State<WordCardWidget> {
         border: Border.all(color: cardBorder),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(isDark ? 0.3 : 0.08),
+            color: Colors.black.withValues(alpha: isDark ? 0.3 : 0.08),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -67,10 +70,7 @@ class _WordCardWidgetState extends State<WordCardWidget> {
           Container(
             width: 110,
             height: 110,
-            decoration: BoxDecoration(
-              color: iconBg,
-              shape: BoxShape.circle,
-            ),
+            decoration: BoxDecoration(color: iconBg, shape: BoxShape.circle),
             child: Center(
               child: Text(_getEmoji(), style: TextStyle(fontSize: 64)),
             ),
@@ -110,15 +110,25 @@ class _WordCardWidgetState extends State<WordCardWidget> {
   Widget _buildBack() {
     final isDark = AppTheme.isDark(context);
     final cardBg = isDark ? AppColors.cardDark : AppColors.cardBgLight;
-    final cardBorder = isDark ? AppColors.cardBorder : AppColors.cardBorderLight;
-    final iconBg = isDark ? const Color(0xFF2A2A2A) : AppColors.pink.withOpacity(0.1);
-    final transcriptionBg = isDark ? const Color(0xFF2A2A2A) : AppColors.pink.withOpacity(0.08);
+    final cardBorder = isDark
+        ? AppColors.cardBorder
+        : AppColors.cardBorderLight;
+    final iconBg = isDark
+        ? const Color(0xFF2A2A2A)
+        : AppColors.primary.withValues(alpha: 0.1);
+    final transcriptionBg = isDark
+        ? const Color(0xFF2A2A2A)
+        : AppColors.primary.withValues(alpha: 0.08);
     final textColor = isDark ? AppColors.white : AppColors.textOnLight;
-    final textSecondary = isDark ? AppColors.textSecondary : AppColors.textSecondaryLight;
-    final buttonBg = isDark ? AppColors.white : AppColors.pink;
+    final textSecondary = isDark
+        ? AppColors.textSecondary
+        : AppColors.textSecondaryLight;
+    final buttonBg = isDark ? AppColors.white : AppColors.primary;
     final buttonText = isDark ? AppColors.black : AppColors.white;
-    final learnedBg = isDark ? const Color(0xFF333333) : AppColors.pink.withOpacity(0.3);
-    final learnedText = isDark ? AppColors.textSecondary : AppColors.pink;
+    final learnedBg = isDark
+        ? const Color(0xFF333333)
+        : AppColors.primary.withValues(alpha: 0.3);
+    final learnedText = isDark ? AppColors.textSecondary : AppColors.primary;
 
     return Container(
       width: double.infinity,
@@ -128,7 +138,7 @@ class _WordCardWidgetState extends State<WordCardWidget> {
         border: Border.all(color: cardBorder),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(isDark ? 0.3 : 0.08),
+            color: Colors.black.withValues(alpha: isDark ? 0.3 : 0.08),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -140,10 +150,7 @@ class _WordCardWidgetState extends State<WordCardWidget> {
           Container(
             width: 90,
             height: 90,
-            decoration: BoxDecoration(
-              color: iconBg,
-              shape: BoxShape.circle,
-            ),
+            decoration: BoxDecoration(color: iconBg, shape: BoxShape.circle),
             child: Center(
               child: Text(_getEmoji(), style: const TextStyle(fontSize: 50)),
             ),
@@ -183,19 +190,20 @@ class _WordCardWidgetState extends State<WordCardWidget> {
           ElevatedButton.icon(
             onPressed: widget.onLearned,
             icon: Icon(
-              widget.onLearned != null ? Icons.check_circle : Icons.check_circle_outline,
+              widget.onLearned != null
+                  ? Icons.check_circle
+                  : Icons.check_circle_outline,
               color: widget.onLearned != null ? null : learnedText,
             ),
             label: Text(
               widget.onLearned != null ? 'Изучил! +10 XP' : 'Изучено',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
             style: ElevatedButton.styleFrom(
               backgroundColor: widget.onLearned != null ? buttonBg : learnedBg,
-              foregroundColor: widget.onLearned != null ? buttonText : learnedText,
+              foregroundColor: widget.onLearned != null
+                  ? buttonText
+                  : learnedText,
               padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 14),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(14),

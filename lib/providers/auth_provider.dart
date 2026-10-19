@@ -108,16 +108,11 @@ class AuthProvider extends ChangeNotifier {
 
   Future<void> markWordLearned(String topicId) async {
     if (_currentUser == null) return;
-    final wl = Map<String, int>.from(_currentUser!.wordsLearned);
-    wl[topicId] = (wl[topicId] ?? 0) + 1;
-    _currentUser = _currentUser!.copyWith(wordsLearned: wl);
+    final wl = Map<String, int>.from(_currentUser!.learnedWordsReal);
+    wl[topicId] = 1;
+    _currentUser = _currentUser!.copyWith(learnedWordsReal: wl);
     await AppDatabase.saveUser(_currentUser!);
     notifyListeners();
-  }
-
-  int getTopicLearnedCount(String topicId) {
-    if (_currentUser == null) return 0;
-    return _currentUser!.wordsLearned[topicId] ?? 0;
   }
 
   Future<void> updateGameStats(String gameType, int score, int total) async {

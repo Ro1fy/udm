@@ -84,31 +84,90 @@ class _UdmurtKylAppState extends State<UdmurtKylApp> {
           return MaterialApp(
             title: AppStrings.appName,
             debugShowCheckedModeBanner: false,
+            builder: (context, child) => AnnotatedRegion<SystemUiOverlayStyle>(
+              value: settings.isDarkMode
+                  ? SystemUiOverlayStyle.light
+                  : SystemUiOverlayStyle.dark,
+              child: child ?? const SizedBox.shrink(),
+            ),
             themeMode: settings.isDarkMode ? ThemeMode.dark : ThemeMode.light,
             theme: ThemeData(
               colorScheme: ColorScheme.fromSeed(
-                seedColor: AppColors.pink,
+                seedColor: AppColors.primary,
                 brightness: Brightness.light,
+                surface: AppColors.cardLight,
               ),
               useMaterial3: true,
               scaffoldBackgroundColor: AppColors.lightBg,
               fontFamily: 'Rooftop',
+              appBarTheme: const AppBarTheme(
+                backgroundColor: AppColors.lightBg,
+                foregroundColor: AppColors.textOnLight,
+                centerTitle: false,
+                elevation: 0,
+                scrolledUnderElevation: 0,
+              ),
               cardTheme: CardThemeData(
                 elevation: 0,
+                color: AppColors.cardLight,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+              ),
+              inputDecorationTheme: InputDecorationTheme(
+                filled: true,
+                fillColor: AppColors.cardLight,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(14),
+                  borderSide: const BorderSide(
+                    color: AppColors.cardBorderLight,
+                  ),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(14),
+                  borderSide: const BorderSide(
+                    color: AppColors.cardBorderLight,
+                  ),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(14),
+                  borderSide: const BorderSide(
+                    color: AppColors.primary,
+                    width: 1.5,
+                  ),
                 ),
               ),
               elevatedButtonTheme: ElevatedButtonThemeData(
                 style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.primary,
+                  foregroundColor: AppColors.white,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(14),
                   ),
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 14,
+                  ),
                 ),
+              ),
+              navigationBarTheme: NavigationBarThemeData(
+                backgroundColor: AppColors.cardLight,
+                indicatorColor: AppColors.primary.withValues(alpha: 0.12),
+                labelTextStyle: WidgetStateProperty.resolveWith((states) {
+                  return TextStyle(
+                    color: states.contains(WidgetState.selected)
+                        ? AppColors.primary
+                        : AppColors.textSecondaryLight,
+                    fontSize: 11,
+                    fontWeight: states.contains(WidgetState.selected)
+                        ? FontWeight.w600
+                        : FontWeight.normal,
+                  );
+                }),
               ),
               snackBarTheme: SnackBarThemeData(
                 behavior: SnackBarBehavior.floating,
+                backgroundColor: AppColors.black,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
@@ -116,29 +175,77 @@ class _UdmurtKylAppState extends State<UdmurtKylApp> {
             ),
             darkTheme: ThemeData(
               colorScheme: ColorScheme.fromSeed(
-                seedColor: AppColors.pink,
+                seedColor: AppColors.primary,
                 brightness: Brightness.dark,
+                surface: AppColors.cardDark,
               ),
               useMaterial3: true,
               scaffoldBackgroundColor: AppColors.darkBg,
               fontFamily: 'Rooftop',
+              appBarTheme: const AppBarTheme(
+                backgroundColor: AppColors.darkBg,
+                foregroundColor: AppColors.white,
+                centerTitle: false,
+                elevation: 0,
+                scrolledUnderElevation: 0,
+              ),
               cardTheme: CardThemeData(
                 elevation: 0,
                 color: AppColors.cardDark,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+              ),
+              inputDecorationTheme: InputDecorationTheme(
+                filled: true,
+                fillColor: AppColors.cardDark,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(14),
+                  borderSide: const BorderSide(color: AppColors.cardBorder),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(14),
+                  borderSide: const BorderSide(color: AppColors.cardBorder),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(14),
+                  borderSide: const BorderSide(
+                    color: AppColors.primary,
+                    width: 1.5,
+                  ),
                 ),
               ),
               elevatedButtonTheme: ElevatedButtonThemeData(
                 style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.primary,
+                  foregroundColor: AppColors.white,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(14),
                   ),
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 14,
+                  ),
                 ),
+              ),
+              navigationBarTheme: NavigationBarThemeData(
+                backgroundColor: AppColors.cardDark,
+                indicatorColor: AppColors.primary.withValues(alpha: 0.24),
+                labelTextStyle: WidgetStateProperty.resolveWith((states) {
+                  return TextStyle(
+                    color: states.contains(WidgetState.selected)
+                        ? AppColors.white
+                        : AppColors.textSecondary,
+                    fontSize: 11,
+                    fontWeight: states.contains(WidgetState.selected)
+                        ? FontWeight.w600
+                        : FontWeight.normal,
+                  );
+                }),
               ),
               snackBarTheme: SnackBarThemeData(
                 behavior: SnackBarBehavior.floating,
+                backgroundColor: AppColors.cardDark,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
@@ -148,19 +255,25 @@ class _UdmurtKylAppState extends State<UdmurtKylApp> {
               builder: (context, auth, _) {
                 if (auth.isLoading) {
                   return Scaffold(
-                    backgroundColor: settings.isDarkMode ? AppColors.black : AppColors.lightBg,
+                    backgroundColor: settings.isDarkMode
+                        ? AppColors.black
+                        : AppColors.lightBg,
                     body: Center(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           CircularProgressIndicator(
-                            valueColor: AlwaysStoppedAnimation<Color>(AppColors.pink),
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              AppColors.primary,
+                            ),
                           ),
                           SizedBox(height: 16),
                           Text(
                             'Загрузка...',
                             style: TextStyle(
-                              color: settings.isDarkMode ? AppColors.white : AppColors.textOnLight,
+                              color: settings.isDarkMode
+                                  ? AppColors.white
+                                  : AppColors.textOnLight,
                               fontSize: 16,
                             ),
                           ),

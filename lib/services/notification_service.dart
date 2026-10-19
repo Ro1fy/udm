@@ -17,7 +17,9 @@ class NotificationService {
   static Future<void> init() async {
     if (_isInitialized) return;
 
-    const androidSettings = AndroidInitializationSettings('@mipmap/ic_launcher');
+    const androidSettings = AndroidInitializationSettings(
+      '@mipmap/ic_launcher',
+    );
     const darwinSettings = DarwinInitializationSettings(
       requestAlertPermission: true,
       requestBadgePermission: true,
@@ -146,10 +148,7 @@ class NotificationService {
           importance: Importance.high,
           priority: Priority.high,
         ),
-        iOS: DarwinNotificationDetails(
-          presentAlert: true,
-          presentBadge: true,
-        ),
+        iOS: DarwinNotificationDetails(presentAlert: true, presentBadge: true),
       ),
       androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
       uiLocalNotificationDateInterpretation:
@@ -166,21 +165,18 @@ class NotificationService {
     // Schedule at 3:00 PM
     await _notifications.zonedSchedule(
       3,
-      '🏠 Удмуртия — интересный факт',
+      'Удмуртский язык — интересный факт',
       fact,
       _nextInstanceOfThreePM(),
       const NotificationDetails(
         android: AndroidNotificationDetails(
           'udmurt_kyl_facts',
-          'Интересные факты',
-          channelDescription: 'Ежедневные интересные факты об Удмуртии и удмуртском языке',
+          'Факты об удмуртском языке',
+          channelDescription: 'Ежедневные факты об удмуртском языке',
           importance: Importance.defaultImportance,
           priority: Priority.defaultPriority,
         ),
-        iOS: DarwinNotificationDetails(
-          presentAlert: true,
-          presentBadge: true,
-        ),
+        iOS: DarwinNotificationDetails(presentAlert: true, presentBadge: true),
       ),
       androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
       uiLocalNotificationDateInterpretation:

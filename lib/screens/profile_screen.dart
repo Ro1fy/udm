@@ -24,10 +24,7 @@ class ProfileScreen extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Text(
-                  '👤',
-                  style: TextStyle(fontSize: 80),
-                ),
+                const Text('👤', style: TextStyle(fontSize: 80)),
                 const SizedBox(height: 24),
                 Text(
                   'Аккаунт не найден',
@@ -56,7 +53,7 @@ class ProfileScreen extends StatelessWidget {
                     );
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.pink,
+                    backgroundColor: AppColors.primary,
                     foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(14),
@@ -90,58 +87,60 @@ class ProfileScreen extends StatelessWidget {
                     borderRadius: BorderRadius.circular(22),
                     border: Border.all(color: AppTheme.cardBorder(context)),
                   ),
-                child: Column(
-                  children: [
-                    CircleAvatar(
-                      radius: 46,
-                      backgroundColor: AppTheme.iconBackground(context),
-                      child: Text(
-                        user.name.isNotEmpty
-                            ? user.name[0].toUpperCase()
-                            : '🎓',
+                  child: Column(
+                    children: [
+                      CircleAvatar(
+                        radius: 46,
+                        backgroundColor: AppTheme.iconBackground(context),
+                        child: Text(
+                          user.name.isNotEmpty
+                              ? user.name[0].toUpperCase()
+                              : '🎓',
+                          style: TextStyle(
+                            fontSize: 44,
+                            fontWeight: FontWeight.bold,
+                            color: AppTheme.textColor(context),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 14),
+                      Text(
+                        user.name,
                         style: TextStyle(
-                          fontSize: 44,
+                          fontSize: 26,
                           fontWeight: FontWeight.bold,
                           color: AppTheme.textColor(context),
                         ),
                       ),
-                    ),
-                    const SizedBox(height: 14),
-                    Text(
-                      user.name,
-                      style: TextStyle(
-                        fontSize: 26,
-                        fontWeight: FontWeight.bold,
-                        color: AppTheme.textColor(context),
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      user.email,
-                      style: const TextStyle(
-                        fontSize: 13,
-                        color: AppColors.pink,
-                      ),
-                    ),
-                    const SizedBox(height: 14),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 18, vertical: 7),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.15),
-                        borderRadius: BorderRadius.circular(18),
-                      ),
-                      child: Text(
-                        'Уровень ${user.level}',
+                      const SizedBox(height: 4),
+                      Text(
+                        user.email,
                         style: const TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.white,
+                          fontSize: 13,
+                          color: AppColors.primary,
                         ),
                       ),
-                    ),
-                  ],
-                ),
+                      const SizedBox(height: 14),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 18,
+                          vertical: 7,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withValues(alpha: 0.15),
+                          borderRadius: BorderRadius.circular(18),
+                        ),
+                        child: Text(
+                          'Уровень ${user.level}',
+                          style: const TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.white,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
               const SizedBox(height: 22),
@@ -161,7 +160,7 @@ class ProfileScreen extends StatelessWidget {
                       icon: Icons.whatshot,
                       title: 'Серия',
                       value: '${user.streak}',
-                      color: AppColors.pink,
+                      color: AppColors.primary,
                     ),
                   ),
                   const SizedBox(width: 10),
@@ -170,7 +169,7 @@ class ProfileScreen extends StatelessWidget {
                       icon: Icons.star,
                       title: 'XP',
                       value: '${user.xp}',
-                      color: AppColors.pink,
+                      color: AppColors.primary,
                     ),
                   ),
                   const SizedBox(width: 10),
@@ -179,8 +178,8 @@ class ProfileScreen extends StatelessWidget {
                       icon: Icons.menu_book,
                       title: 'Слова',
                       value:
-                          '${user.wordsLearned.values.fold<int>(0, (a, b) => a + b)}',
-                      color: AppColors.pink,
+                          '${user.learnedWordsReal.values.fold<int>(0, (a, b) => a + b)}',
+                      color: AppColors.primary,
                     ),
                   ),
                 ],
@@ -200,6 +199,27 @@ class ProfileScreen extends StatelessWidget {
                 played: user.gameStatsPlayed['choose_translation'] ?? 0,
                 correct: user.gameStatsCorrect['choose_translation'] ?? 0,
                 bestScore: user.gameStatsBestScore['choose_translation'] ?? 0,
+              ),
+              const SizedBox(height: 10),
+              _GameStatCard(
+                title: 'Найди лишнее слово',
+                played: user.gameStatsPlayed['find_odd_word'] ?? 0,
+                correct: user.gameStatsCorrect['find_odd_word'] ?? 0,
+                bestScore: user.gameStatsBestScore['find_odd_word'] ?? 0,
+              ),
+              const SizedBox(height: 10),
+              _GameStatCard(
+                title: 'Распредели по темам',
+                played: user.gameStatsPlayed['sort_words'] ?? 0,
+                correct: user.gameStatsCorrect['sort_words'] ?? 0,
+                bestScore: user.gameStatsBestScore['sort_words'] ?? 0,
+              ),
+              const SizedBox(height: 10),
+              _GameStatCard(
+                title: 'Найди пару',
+                played: user.gameStatsPlayed['memory_pairs'] ?? 0,
+                correct: user.gameStatsCorrect['memory_pairs'] ?? 0,
+                bestScore: user.gameStatsBestScore['memory_pairs'] ?? 0,
               ),
               const SizedBox(height: 10),
               _GameStatCard(
@@ -225,44 +245,61 @@ class ProfileScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 12),
-              Container(
-                decoration: BoxDecoration(
-                  color: AppTheme.cardBackground(context),
+              Material(
+                color: AppTheme.cardBackground(context),
+                clipBehavior: Clip.antiAlias,
+                shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: AppTheme.cardBorder(context)),
+                  side: BorderSide(color: AppTheme.cardBorder(context)),
                 ),
                 child: Column(
                   children: [
                     ListTile(
-                      leading: const Icon(Icons.edit, color: AppColors.pink),
-                      title:
-                          Text('Редактировать профиль', style: TextStyle(color: AppTheme.textColor(context))),
-                      trailing:
-                          const Icon(Icons.chevron_right, color: AppColors.textSecondary),
+                      leading: const Icon(Icons.edit, color: AppColors.primary),
+                      title: Text(
+                        'Редактировать профиль',
+                        style: TextStyle(color: AppTheme.textColor(context)),
+                      ),
+                      trailing: const Icon(
+                        Icons.chevron_right,
+                        color: AppColors.textSecondary,
+                      ),
                       onTap: () => _showEditProfileDialog(context),
                     ),
                     Divider(height: 1, color: AppTheme.dividerColor(context)),
                     ListTile(
-                      leading: const Icon(Icons.info, color: AppColors.skyBlue),
-                      title:
-                          Text('Об удмуртском языке', style: TextStyle(color: AppTheme.textColor(context))),
-                      trailing:
-                          const Icon(Icons.chevron_right, color: AppColors.textSecondary),
+                      leading: const Icon(Icons.info, color: AppColors.primary),
+                      title: Text(
+                        'Об удмуртском языке',
+                        style: TextStyle(color: AppTheme.textColor(context)),
+                      ),
+                      trailing: const Icon(
+                        Icons.chevron_right,
+                        color: AppColors.textSecondary,
+                      ),
                       onTap: () => _showLanguageInfo(context),
                     ),
                     Divider(height: 1, color: AppTheme.dividerColor(context)),
                     ListTile(
-                      leading: const Icon(Icons.logout, color: AppColors.lime),
-                      title:
-                          Text('Выйти', style: TextStyle(color: AppTheme.textColor(context))),
-                      trailing:
-                          const Icon(Icons.chevron_right, color: AppColors.textSecondary),
+                      leading: const Icon(
+                        Icons.logout,
+                        color: AppColors.accent,
+                      ),
+                      title: Text(
+                        'Выйти',
+                        style: TextStyle(color: AppTheme.textColor(context)),
+                      ),
+                      trailing: const Icon(
+                        Icons.chevron_right,
+                        color: AppColors.textSecondary,
+                      ),
                       onTap: () async {
                         await auth.logout();
                         if (context.mounted) {
                           Navigator.of(context).pushAndRemoveUntil(
                             MaterialPageRoute(
-                                builder: (_) => const LoginScreen()),
+                              builder: (_) => const LoginScreen(),
+                            ),
                             (route) => false,
                           );
                         }
@@ -285,8 +322,10 @@ class ProfileScreen extends StatelessWidget {
       builder: (_) => AlertDialog(
         backgroundColor: AppTheme.dialogBackground(context),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-        title: Text('Редактировать профиль',
-            style: TextStyle(color: AppTheme.textColor(context))),
+        title: Text(
+          'Редактировать профиль',
+          style: TextStyle(color: AppTheme.textColor(context)),
+        ),
         content: TextField(
           controller: controller,
           style: TextStyle(color: AppTheme.textColor(context)),
@@ -301,17 +340,22 @@ class ProfileScreen extends StatelessWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: Text('Отмена', style: TextStyle(color: AppTheme.textSecondary(context))),
+            child: Text(
+              'Отмена',
+              style: TextStyle(color: AppTheme.textSecondary(context)),
+            ),
           ),
           ElevatedButton(
             onPressed: () {
               if (controller.text.trim().isNotEmpty) {
-                context.read<AuthProvider>().updateProfile(controller.text.trim());
+                context.read<AuthProvider>().updateProfile(
+                  controller.text.trim(),
+                );
               }
               Navigator.of(context).pop();
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.pink,
+              backgroundColor: AppColors.primary,
               foregroundColor: AppColors.white,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10),
@@ -334,8 +378,13 @@ class ProfileScreen extends StatelessWidget {
           children: [
             const Text('🏠', style: TextStyle(fontSize: 26)),
             const SizedBox(width: 10),
-            Text('Удмуртский язык',
-                style: TextStyle(color: AppTheme.textColor(context), fontSize: 18)),
+            Text(
+              'Удмуртский язык',
+              style: TextStyle(
+                color: AppTheme.textColor(context),
+                fontSize: 18,
+              ),
+            ),
           ],
         ),
         content: SingleChildScrollView(
@@ -344,32 +393,19 @@ class ProfileScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Интересные факты',
+                'Удмуртский язык относится к финно-угорской языковой семье.',
                 style: TextStyle(
                   fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: AppTheme.textColor(context),
+                  color: AppTheme.textSecondary(context),
                 ),
               ),
               const SizedBox(height: 10),
-              _FactItem(emoji: '📊', fact: 'На удмуртском языке говорят около 324 000 человек.'),
-              _FactItem(emoji: '🌍', fact: 'Удмуртский язык относится к финно-угорской языковой семье.'),
-              _FactItem(emoji: '⚠️', fact: 'В 2013 году ЮНЕСКО включил удмуртский язык в атлас вымирающих языков.'),
-              _FactItem(emoji: '📝', fact: 'Удмуртский алфавит основан на кириллице с добавлением букв: Ӝ/ӝ, Ӟ/ӟ, Ӥ/ӥ, Ӧ/ӧ, Ӵ/ӵ.'),
-              _FactItem(emoji: '🏛️', fact: 'Удмуртия — республика в составе России, расположена между реками Кама и Вятка.'),
-              const SizedBox(height: 14),
               Text(
-                'Количество носителей',
+                'На удмуртском языке говорят около 324 000 человек.',
                 style: TextStyle(
                   fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: AppTheme.textColor(context),
+                  color: AppTheme.textSecondary(context),
                 ),
-              ),
-              const SizedBox(height: 6),
-              Text(
-                'По данным переписи 2010 года — 26,99% населения Удмуртии. К 2020 году доля сократилась примерно на 6%.',
-                style: TextStyle(fontSize: 13, color: AppTheme.textSecondary(context)),
               ),
             ],
           ),
@@ -378,9 +414,11 @@ class ProfileScreen extends StatelessWidget {
           ElevatedButton(
             onPressed: () => Navigator.of(context).pop(),
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.pink,
+              backgroundColor: AppColors.primary,
               foregroundColor: AppColors.white,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
             ),
             child: const Text('Понятно'),
           ),
@@ -396,7 +434,12 @@ class _StatCard extends StatelessWidget {
   final String value;
   final Color color;
 
-  const _StatCard({required this.icon, required this.title, required this.value, required this.color});
+  const _StatCard({
+    required this.icon,
+    required this.title,
+    required this.value,
+    required this.color,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -422,7 +465,7 @@ class _StatCard extends StatelessWidget {
           const SizedBox(height: 2),
           Text(
             title,
-            style: const TextStyle(fontSize: 11, color: AppColors.pink),
+            style: const TextStyle(fontSize: 11, color: AppColors.primary),
           ),
         ],
       ),
@@ -436,7 +479,12 @@ class _GameStatCard extends StatelessWidget {
   final int correct;
   final int bestScore;
 
-  const _GameStatCard({required this.title, required this.played, required this.correct, required this.bestScore});
+  const _GameStatCard({
+    required this.title,
+    required this.played,
+    required this.correct,
+    required this.bestScore,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -457,9 +505,9 @@ class _GameStatCard extends StatelessWidget {
           Text(
             title,
             style: TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.bold,
-                color: AppTheme.textColor(context)
+              fontSize: 15,
+              fontWeight: FontWeight.bold,
+              color: AppTheme.textColor(context),
             ),
           ),
           const SizedBox(height: 10),
@@ -469,7 +517,10 @@ class _GameStatCard extends StatelessWidget {
               _MiniStat(label: 'Игр', value: '$played'),
               _MiniStat(label: 'Верно', value: '$correct'),
               _MiniStat(label: 'Лучший', value: '$bestScore'),
-              _MiniStat(label: 'Точность', value: '${(accuracy * 100).toInt()}%'),
+              _MiniStat(
+                label: 'Точность',
+                value: '${(accuracy * 100).toInt()}%',
+              ),
             ],
           ),
         ],
@@ -490,42 +541,20 @@ class _MiniStat extends StatelessWidget {
       children: [
         Text(
           value,
-          style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: AppColors.pink),
+          style: const TextStyle(
+            fontSize: 15,
+            fontWeight: FontWeight.bold,
+            color: AppColors.primary,
+          ),
         ),
         Text(
           label,
-          style: TextStyle(fontSize: 10, color: AppTheme.textSecondary(context)),
+          style: TextStyle(
+            fontSize: 10,
+            color: AppTheme.textSecondary(context),
+          ),
         ),
       ],
     );
   }
 }
-
-class _FactItem extends StatelessWidget {
-  final String emoji;
-  final String fact;
-
-  const _FactItem({required this.emoji, required this.fact});
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 10),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(emoji, style: const TextStyle(fontSize: 18)),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Text(
-              fact,
-              style: const TextStyle(fontSize: 13, color: AppColors.textSecondary, height: 1.4),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-

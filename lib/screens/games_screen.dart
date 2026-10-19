@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../constants.dart';
 import '../screens/game_mode_screen.dart';
+import '../screens/extra_game_screen.dart';
 import '../theme.dart';
 
 class GamesScreen extends StatelessWidget {
@@ -34,46 +35,66 @@ class GamesScreen extends StatelessWidget {
                   _GameModeCard(
                     title: 'Выбери перевод',
                     description:
-                        'Посмотри на картинку и выбери правильный перевод из 4 вариантов',
-                    icon: Icons.check_circle_outline,
-                    onTap: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (_) => const GameModeScreen(
-                              gameMode: GameMode.chooseTranslation),
-                        ),
-                      );
-                    },
+                        'Выбери правильный перевод слова из трёх вариантов',
+                    icon: Icons.translate_rounded,
+                    onTap: () => _openGame(
+                      context,
+                      const GameModeScreen(
+                        gameMode: GameMode.chooseTranslation,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  _GameModeCard(
+                    title: 'Найди лишнее слово',
+                    description: 'Найди слово, которое относится к другой теме',
+                    icon: Icons.filter_alt_rounded,
+                    onTap: () => _openGame(
+                      context,
+                      const ExtraGameScreen(mode: ExtraGameMode.findOdd),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  _GameModeCard(
+                    title: 'Распредели по темам',
+                    description:
+                        'Перетащи слова в подходящие тематические группы',
+                    icon: Icons.drag_indicator_rounded,
+                    onTap: () => _openGame(
+                      context,
+                      const ExtraGameScreen(mode: ExtraGameMode.sortWords),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  _GameModeCard(
+                    title: 'Найди пару',
+                    description: 'Сопоставь удмуртское слово с переводом',
+                    icon: Icons.grid_view_rounded,
+                    onTap: () => _openGame(
+                      context,
+                      const ExtraGameScreen(mode: ExtraGameMode.memoryPairs),
+                    ),
                   ),
                   const SizedBox(height: 12),
                   _GameModeCard(
                     title: 'Собери слово',
                     description:
                         'Переставь буквы в правильном порядке, чтобы собрать удмуртское слово',
-                    icon: Icons.extension,
-                    onTap: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (_) =>
-                              const GameModeScreen(gameMode: GameMode.wordScramble),
-                        ),
-                      );
-                    },
+                    icon: Icons.extension_rounded,
+                    onTap: () => _openGame(
+                      context,
+                      const GameModeScreen(gameMode: GameMode.wordScramble),
+                    ),
                   ),
                   const SizedBox(height: 12),
                   _GameModeCard(
                     title: 'Правда или Ложь',
-                    description:
-                        'Определи, соответствует ли удмуртское слово картинке',
-                    icon: Icons.shuffle,
-                    onTap: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (_) =>
-                              const GameModeScreen(gameMode: GameMode.trueFalse),
-                        ),
-                      );
-                    },
+                    description: 'Определи, подходит ли слово к картинке',
+                    icon: Icons.fact_check_outlined,
+                    onTap: () => _openGame(
+                      context,
+                      const GameModeScreen(gameMode: GameMode.trueFalse),
+                    ),
                   ),
                 ],
               ),
@@ -82,6 +103,10 @@ class GamesScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  void _openGame(BuildContext context, Widget screen) {
+    Navigator.of(context).push(MaterialPageRoute(builder: (_) => screen));
   }
 }
 
@@ -102,58 +127,53 @@ class _GameModeCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: AppTheme.cardBackground(context),
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: AppTheme.cardBorder(context)),
-          boxShadow: [
-            BoxShadow(
-              color: AppTheme.shadowColor(context),
-              blurRadius: 12,
-            ),
-          ],
-        ),
-        child: Row(
-          children: [
-            Container(
-              width: 64,
-              height: 64,
-              decoration: BoxDecoration(
-                color: AppTheme.iconBackground(context),
-                borderRadius: BorderRadius.circular(16),
+      child: Card(
+        child: Padding(
+          padding: const EdgeInsets.all(18),
+          child: Row(
+            children: [
+              Container(
+                width: 54,
+                height: 54,
+                decoration: BoxDecoration(
+                  color: AppTheme.iconBackground(context),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Icon(icon, color: AppColors.primary, size: 28),
               ),
-              child: Icon(icon, color: AppColors.pink, size: 34),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: AppTheme.textColor(context),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: TextStyle(
+                        fontSize: 17,
+                        fontWeight: FontWeight.w600,
+                        color: AppTheme.textColor(context),
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 6),
-                  Text(
-                    description,
-                    style: const TextStyle(
-                      fontSize: 12,
-                      color: AppColors.pink,
+                    const SizedBox(height: 5),
+                    Text(
+                      description,
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: AppTheme.textSecondary(context),
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
                     ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-            const Icon(Icons.arrow_forward_ios, color: AppColors.pink, size: 20),
-          ],
+              Icon(
+                Icons.chevron_right_rounded,
+                color: AppTheme.textSecondary(context),
+                size: 24,
+              ),
+            ],
+          ),
         ),
       ),
     );

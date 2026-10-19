@@ -97,7 +97,7 @@ class TopicBoxAdapter extends TypeAdapter<TopicBox> {
   int get hashCode => typeId.hashCode;
 
   @override
-  bool operator ==(Object other) =>
+  bool operator == (Object other) =>
       identical(this, other) ||
       other is TopicBoxAdapter &&
           runtimeType == other.runtimeType &&
@@ -127,13 +127,14 @@ class UserBoxAdapter extends TypeAdapter<UserBox> {
       gameStatsPlayed: (fields[8] as Map?)?.cast<String, int>(),
       gameStatsCorrect: (fields[9] as Map?)?.cast<String, int>(),
       gameStatsBestScore: (fields[10] as Map?)?.cast<String, int>(),
+      learnedWordsReal: (fields[12] as Map?)?.cast<String, int>(),
     );
   }
 
   @override
   void write(BinaryWriter writer, UserBox obj) {
     writer
-      ..writeByte(12)
+      ..writeByte(13)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -157,7 +158,9 @@ class UserBoxAdapter extends TypeAdapter<UserBox> {
       ..writeByte(9)
       ..write(obj.gameStatsCorrect)
       ..writeByte(10)
-      ..write(obj.gameStatsBestScore);
+      ..write(obj.gameStatsBestScore)
+      ..writeByte(12)
+      ..write(obj.learnedWordsReal);
   }
 
   @override

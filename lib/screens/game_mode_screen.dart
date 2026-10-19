@@ -65,6 +65,7 @@ class _GameModeScreenState extends State<GameModeScreen> {
     final allWords = List<Word>.from(VocabularyData.words);
     allWords.shuffle(Random());
     _questions = allWords.take(10).toList();
+    _currentOptions = _generateOptions(_questions.first);
   }
 
   void _scrambleCurrentWord() {
@@ -97,12 +98,14 @@ class _GameModeScreenState extends State<GameModeScreen> {
     });
 
     // Record the result
-    _results.add(QuestionResult(
-      word: _questions[_currentIndex],
-      isCorrect: isCorrect,
-      selectedOption: options[selectedOption],
-      points: isCorrect ? 10 : 0,
-    ));
+    _results.add(
+      QuestionResult(
+        word: _questions[_currentIndex],
+        isCorrect: isCorrect,
+        selectedOption: options[selectedOption],
+        points: isCorrect ? 10 : 0,
+      ),
+    );
 
     _finishQuestion();
   }
@@ -124,12 +127,14 @@ class _GameModeScreenState extends State<GameModeScreen> {
     });
 
     // Record the result
-    _results.add(QuestionResult(
-      word: _questions[_currentIndex],
-      isCorrect: _tfCorrect!,
-      userSaysTrue: userSaysTrue,
-      points: _tfCorrect! ? 10 : 0,
-    ));
+    _results.add(
+      QuestionResult(
+        word: _questions[_currentIndex],
+        isCorrect: _tfCorrect!,
+        userSaysTrue: userSaysTrue,
+        points: _tfCorrect! ? 10 : 0,
+      ),
+    );
 
     if (!isActuallyTrue) {
       _tfDisplayedEmoji = _getCurrentEmoji();
@@ -147,7 +152,7 @@ class _GameModeScreenState extends State<GameModeScreen> {
           _isCorrect = null;
           _selectedIndex = null;
           _selectedOptionText = null;
-          _currentOptions = null;
+          _currentOptions = _generateOptions(_questions[_currentIndex]);
           _tfAnswered = false;
           _tfCorrect = null;
           _tfUserAnswer = null;
@@ -167,10 +172,10 @@ class _GameModeScreenState extends State<GameModeScreen> {
   void _showResults() {
     context.read<AuthProvider>().addXP(_score * 10);
     context.read<AuthProvider>().updateGameStats(
-          _getGameTypeName(),
-          _score,
-          _questions.length,
-        );
+      _getGameTypeName(),
+      _score,
+      _questions.length,
+    );
 
     final incorrectAnswers = _results.where((r) => !r.isCorrect).length;
     final totalPoints = _results.fold<int>(0, (sum, r) => sum + r.points);
@@ -193,7 +198,7 @@ class _GameModeScreenState extends State<GameModeScreen> {
               Container(
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  color: AppColors.pink,
+                  color: AppColors.primary,
                   borderRadius: const BorderRadius.only(
                     topLeft: Radius.circular(20),
                     topRight: Radius.circular(20),
@@ -205,8 +210,8 @@ class _GameModeScreenState extends State<GameModeScreen> {
                       _score == _questions.length
                           ? '🏆'
                           : _score >= 7
-                              ? '🎉'
-                              : '💪',
+                          ? '🎉'
+                          : '💪',
                       style: const TextStyle(fontSize: 56),
                     ),
                     const SizedBox(height: 12),
@@ -222,21 +227,9 @@ class _GameModeScreenState extends State<GameModeScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        _buildStatCard(
-                          '✅',
-                          '$_score',
-                          'Правильно',
-                        ),
-                        _buildStatCard(
-                          '❌',
-                          '$incorrectAnswers',
-                          'Ошибки',
-                        ),
-                        _buildStatCard(
-                          '⭐',
-                          '$totalPoints',
-                          'Баллы',
-                        ),
+                        _buildStatCard('✅', '$_score', 'Правильно'),
+                        _buildStatCard('❌', '$incorrectAnswers', 'Ошибки'),
+                        _buildStatCard('⭐', '$totalPoints', 'Баллы'),
                       ],
                     ),
                   ],
@@ -295,14 +288,14 @@ class _GameModeScreenState extends State<GameModeScreen> {
                           _restartGame();
                         },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.pink,
+                          backgroundColor: AppColors.primary,
                           foregroundColor: Colors.white,
                           padding: const EdgeInsets.symmetric(vertical: 16),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
                           elevation: 4,
-                          shadowColor: AppColors.pink,
+                          shadowColor: AppColors.primary,
                         ),
                         child: const Text(
                           'ЕЩЁ РАЗ',
@@ -328,7 +321,7 @@ class _GameModeScreenState extends State<GameModeScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.2),
+        color: Colors.white.withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Column(
@@ -345,10 +338,7 @@ class _GameModeScreenState extends State<GameModeScreen> {
           ),
           Text(
             label,
-            style: const TextStyle(
-              fontSize: 12,
-              color: Colors.white,
-            ),
+            style: const TextStyle(fontSize: 12, color: Colors.white),
           ),
         ],
       ),
@@ -368,13 +358,13 @@ class _GameModeScreenState extends State<GameModeScreen> {
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: result.isCorrect
-            ? AppColors.success.withOpacity(0.1)
-            : AppColors.error.withOpacity(0.1),
+            ? AppColors.success.withValues(alpha: 0.1)
+            : AppColors.error.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
           color: result.isCorrect
-              ? AppColors.success.withOpacity(0.3)
-              : AppColors.error.withOpacity(0.3),
+              ? AppColors.success.withValues(alpha: 0.3)
+              : AppColors.error.withValues(alpha: 0.3),
           width: 1,
         ),
       ),
@@ -418,17 +408,11 @@ class _GameModeScreenState extends State<GameModeScreen> {
                 ),
                 Text(
                   word.transcription,
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: textSecondaryColor,
-                  ),
+                  style: TextStyle(fontSize: 12, color: textSecondaryColor),
                 ),
                 Text(
                   word.russian,
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: textSecondaryColor,
-                  ),
+                  style: TextStyle(fontSize: 14, color: textSecondaryColor),
                 ),
                 // Show user's answer if incorrect
                 if (!result.isCorrect) ...[
@@ -450,8 +434,8 @@ class _GameModeScreenState extends State<GameModeScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
             decoration: BoxDecoration(
               color: result.isCorrect
-                  ? AppColors.success.withOpacity(0.2)
-                  : AppColors.error.withOpacity(0.2),
+                  ? AppColors.success.withValues(alpha: 0.2)
+                  : AppColors.error.withValues(alpha: 0.2),
               borderRadius: BorderRadius.circular(8),
             ),
             child: Text(
@@ -606,9 +590,11 @@ class _GameModeScreenState extends State<GameModeScreen> {
                     ),
                     Container(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 12, vertical: 6),
+                        horizontal: 12,
+                        vertical: 6,
+                      ),
                       decoration: BoxDecoration(
-                        color: AppColors.pink,
+                        color: AppColors.primary,
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Text(
@@ -628,17 +614,15 @@ class _GameModeScreenState extends State<GameModeScreen> {
                 child: LinearProgressIndicator(
                   value: (_currentIndex + 1) / _questions.length,
                   backgroundColor: progressBgColor,
-                  valueColor:
-                      const AlwaysStoppedAnimation<Color>(AppColors.pink),
+                  valueColor: const AlwaysStoppedAnimation<Color>(
+                    AppColors.primary,
+                  ),
                 ),
               ),
               const SizedBox(height: 8),
               Text(
                 '${_currentIndex + 1} / ${_questions.length}',
-                style: TextStyle(
-                  color: textSecondaryColor,
-                  fontSize: 14,
-                ),
+                style: TextStyle(color: textSecondaryColor, fontSize: 14),
               ),
               const SizedBox(height: 20),
               // Game content
@@ -666,6 +650,19 @@ class _GameModeScreenState extends State<GameModeScreen> {
     }
   }
 
+  List<String> _generateOptions(Word correctWord) {
+    final distractors =
+        VocabularyData.words
+            .where((word) => word.russian != correctWord.russian)
+            .map((word) => word.russian)
+            .toSet()
+            .toList()
+          ..shuffle(Random());
+    final options = [correctWord.russian, ...distractors.take(2)]
+      ..shuffle(Random());
+    return options;
+  }
+
   Widget _buildChooseTranslation() {
     final word = _questions[_currentIndex];
     final options = _currentOptions ?? _generateOptions(word);
@@ -681,11 +678,11 @@ class _GameModeScreenState extends State<GameModeScreen> {
           width: double.infinity,
           padding: const EdgeInsets.symmetric(vertical: 28),
           decoration: BoxDecoration(
-            color: AppColors.pink,
+            color: AppColors.primary,
             borderRadius: BorderRadius.circular(20),
             boxShadow: [
               BoxShadow(
-                color: AppColors.pink.withOpacity(0.3),
+                color: AppColors.primary.withValues(alpha: 0.3),
                 blurRadius: 16,
               ),
             ],
@@ -704,10 +701,7 @@ class _GameModeScreenState extends State<GameModeScreen> {
               const SizedBox(height: 8),
               Text(
                 word.transcription,
-                style: const TextStyle(
-                  fontSize: 18,
-                  color: AppColors.white,
-                ),
+                style: const TextStyle(fontSize: 18, color: AppColors.white),
               ),
             ],
           ),
@@ -722,7 +716,7 @@ class _GameModeScreenState extends State<GameModeScreen> {
           ),
         ),
         const SizedBox(height: 24),
-        ...List.generate(4, (index) {
+        ...List.generate(options.length, (index) {
           Color bgColor = cardBgColor;
           Color textColorButton = textColor;
           Color borderColor = AppTheme.gameCardBorderColor(context);
@@ -753,28 +747,12 @@ class _GameModeScreenState extends State<GameModeScreen> {
                 ),
                 minimumSize: const Size(double.infinity, 56),
               ),
-              child: Text(
-                options[index],
-                style: const TextStyle(fontSize: 18),
-              ),
+              child: Text(options[index], style: const TextStyle(fontSize: 18)),
             ),
           );
         }),
       ],
     );
-  }
-
-  List<String> _generateOptions(Word correctWord) {
-    final allWords = VocabularyData.words
-        .where((w) => w.id != correctWord.id)
-        .toList();
-    allWords.shuffle(Random());
-    final options = [correctWord.russian];
-    for (int i = 0; i < 3 && i < allWords.length; i++) {
-      options.add(allWords[i].russian);
-    }
-    options.shuffle(Random());
-    return options;
   }
 
   Widget _buildWordScramble() {
@@ -790,7 +768,7 @@ class _GameModeScreenState extends State<GameModeScreen> {
           width: 120,
           height: 120,
           decoration: const BoxDecoration(
-            color: AppColors.pink,
+            color: AppColors.primary,
             shape: BoxShape.circle,
           ),
           child: Center(
@@ -812,10 +790,7 @@ class _GameModeScreenState extends State<GameModeScreen> {
         const SizedBox(height: 8),
         Text(
           word.russian,
-          style: TextStyle(
-            fontSize: 18,
-            color: textSecondaryColor,
-          ),
+          style: TextStyle(fontSize: 18, color: textSecondaryColor),
         ),
         const SizedBox(height: 24),
         // Answer display
@@ -829,10 +804,7 @@ class _GameModeScreenState extends State<GameModeScreen> {
               width: 1,
             ),
             boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.05),
-                blurRadius: 10,
-              ),
+              BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10),
             ],
           ),
           child: Text(
@@ -842,7 +814,7 @@ class _GameModeScreenState extends State<GameModeScreen> {
               fontWeight: FontWeight.bold,
               color: _userAnswer.isEmpty
                   ? textSecondaryColor
-                  : AppColors.pink,
+                  : AppColors.primary,
               letterSpacing: 4,
             ),
             textAlign: TextAlign.center,
@@ -855,9 +827,11 @@ class _GameModeScreenState extends State<GameModeScreen> {
           runSpacing: 8,
           alignment: WrapAlignment.center,
           children: List.generate(_scrambledLetters.length, (index) {
-            final isUsed = _userAnswer.split('').where(
-              (e) => e == _scrambledLetters[index],
-            ).length >=
+            final isUsed =
+                _userAnswer
+                    .split('')
+                    .where((e) => e == _scrambledLetters[index])
+                    .length >=
                 _scrambledLetters.indexOf(_scrambledLetters[index]) + 1;
 
             return GestureDetector(
@@ -877,8 +851,8 @@ class _GameModeScreenState extends State<GameModeScreen> {
                 height: 50,
                 decoration: BoxDecoration(
                   color: isUsed
-                      ? AppColors.pink.withOpacity(0.1)
-                      : AppColors.pink,
+                      ? AppColors.primary.withValues(alpha: 0.1)
+                      : AppColors.primary,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Center(
@@ -905,7 +879,9 @@ class _GameModeScreenState extends State<GameModeScreen> {
                   : () {
                       setState(() {
                         _userAnswer = _userAnswer.substring(
-                            0, _userAnswer.length - 1);
+                          0,
+                          _userAnswer.length - 1,
+                        );
                       });
                     },
               icon: const Icon(Icons.backspace),
@@ -921,8 +897,8 @@ class _GameModeScreenState extends State<GameModeScreen> {
               icon: const Icon(Icons.shuffle),
               label: const Text('Перемешать'),
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.lime,
-                foregroundColor: Colors.white,
+                backgroundColor: AppColors.accent,
+                foregroundColor: AppColors.textOnLight,
               ),
             ),
           ],
@@ -943,16 +919,20 @@ class _GameModeScreenState extends State<GameModeScreen> {
     }
 
     // Record the result
-    _results.add(QuestionResult(
-      word: _questions[_currentIndex],
-      isCorrect: isCorrect,
-      userAnswer: _userAnswer,
-      points: isCorrect ? 10 : 0,
-    ));
+    _results.add(
+      QuestionResult(
+        word: _questions[_currentIndex],
+        isCorrect: isCorrect,
+        userAnswer: _userAnswer,
+        points: isCorrect ? 10 : 0,
+      ),
+    );
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(isCorrect ? '✅ Правильно!' : '❌ Неправильно. Ответ: $correctWord'),
+        content: Text(
+          isCorrect ? '✅ Правильно!' : '❌ Неправильно. Ответ: $correctWord',
+        ),
         backgroundColor: isCorrect ? AppColors.success : AppColors.error,
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -981,10 +961,7 @@ class _GameModeScreenState extends State<GameModeScreen> {
               width: 1,
             ),
             boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.1),
-                blurRadius: 20,
-              ),
+              BoxShadow(color: Colors.black.withValues(alpha: 0.1), blurRadius: 20),
             ],
           ),
           child: Center(
@@ -1006,18 +983,12 @@ class _GameModeScreenState extends State<GameModeScreen> {
         const SizedBox(height: 8),
         Text(
           word.transcription,
-          style: TextStyle(
-            fontSize: 16,
-            color: textSecondaryColor,
-          ),
+          style: TextStyle(fontSize: 16, color: textSecondaryColor),
         ),
         const SizedBox(height: 32),
         Text(
           'Это слово соответствует картинке?',
-          style: TextStyle(
-            fontSize: 18,
-            color: textSecondaryColor,
-          ),
+          style: TextStyle(fontSize: 18, color: textSecondaryColor),
           textAlign: TextAlign.center,
         ),
         const SizedBox(height: 32),
@@ -1025,18 +996,16 @@ class _GameModeScreenState extends State<GameModeScreen> {
           children: [
             Expanded(
               child: ElevatedButton.icon(
-                onPressed: _tfAnswered
-                    ? null
-                    : () => _checkTrueFalse(true),
+                onPressed: _tfAnswered ? null : () => _checkTrueFalse(true),
                 icon: const Icon(Icons.check, size: 32),
                 label: const Text(
-                    'Верно',
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  'Верно',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: _tfAnswered && _tfCorrect == true
                       ? AppColors.success
-                      : AppColors.success.withOpacity(0.2),
+                      : AppColors.success.withValues(alpha: 0.2),
                   foregroundColor: _tfAnswered && _tfCorrect == true
                       ? Colors.white
                       : AppColors.success,
@@ -1050,18 +1019,16 @@ class _GameModeScreenState extends State<GameModeScreen> {
             const SizedBox(width: 16),
             Expanded(
               child: ElevatedButton.icon(
-                onPressed: _tfAnswered
-                    ? null
-                    : () => _checkTrueFalse(false),
+                onPressed: _tfAnswered ? null : () => _checkTrueFalse(false),
                 icon: const Icon(Icons.close, size: 32),
                 label: const Text(
-                    'Не верно',
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  'Не верно',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: _tfAnswered && _tfCorrect == false
                       ? AppColors.error
-                      : AppColors.error.withOpacity(0.2),
+                      : AppColors.error.withValues(alpha: 0.2),
                   foregroundColor: _tfAnswered && _tfCorrect == false
                       ? Colors.white
                       : AppColors.error,
@@ -1086,4 +1053,3 @@ class _GameModeScreenState extends State<GameModeScreen> {
     return _getEmojiForWord(allWords[random.nextInt(allWords.length)]);
   }
 }
-

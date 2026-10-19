@@ -30,9 +30,10 @@ class _LoginScreenState extends State<LoginScreen>
       vsync: this,
       duration: const Duration(milliseconds: 700),
     );
-    _fadeAnim = Tween<double>(begin: 0, end: 1).animate(
-      CurvedAnimation(parent: _animCtrl, curve: Curves.easeIn),
-    );
+    _fadeAnim = Tween<double>(
+      begin: 0,
+      end: 1,
+    ).animate(CurvedAnimation(parent: _animCtrl, curve: Curves.easeIn));
     _animCtrl.forward();
   }
 
@@ -69,7 +70,7 @@ class _LoginScreenState extends State<LoginScreen>
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(errorMsg),
-            backgroundColor: AppColors.pink,
+            backgroundColor: AppColors.primary,
             behavior: SnackBarBehavior.floating,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
@@ -98,30 +99,26 @@ class _LoginScreenState extends State<LoginScreen>
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   SizedBox(height: size.height * 0.07),
-                  // Logo circle — solid pink
                   Container(
-                    width: 110,
-                    height: 110,
+                    width: 88,
+                    height: 88,
                     decoration: BoxDecoration(
-                      color: AppColors.pink,
+                      color: AppColors.primary,
                       shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(
-                          color: AppColors.pink.withOpacity(0.4),
-                          blurRadius: 24,
-                          spreadRadius: 4,
-                        ),
-                      ],
                     ),
                     child: const Center(
-                      child: Icon(Icons.school, color: AppColors.white, size: 56),
+                      child: Icon(
+                        Icons.school_rounded,
+                        color: AppColors.white,
+                        size: 42,
+                      ),
                     ),
                   ),
                   const SizedBox(height: 28),
                   Text(
                     AppStrings.appName,
                     style: TextStyle(
-                      fontSize: 34,
+                      fontSize: 28,
                       fontWeight: FontWeight.w800,
                       color: AppTheme.textColor(context),
                     ),
@@ -161,65 +158,30 @@ class _LoginScreenState extends State<LoginScreen>
                           if (!_isLoginMode) ...[
                             TextFormField(
                               controller: _nameController,
-                              style: const TextStyle(color: AppColors.white),
-                              decoration: InputDecoration(
+                              style: TextStyle(
+                                color: AppTheme.textColor(context),
+                              ),
+                              decoration: const InputDecoration(
                                 labelText: 'Имя',
                                 hintText: 'Ваше имя',
-                                hintStyle:
-                                    const TextStyle(color: AppColors.textSecondary),
-                                prefixIcon: const Icon(Icons.person_outline,
-                                    color: AppColors.textSecondary),
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(14),
-                                  borderSide:
-                                      const BorderSide(color: Color(0xFF333333)),
-                                ),
-                                enabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(14),
-                                  borderSide:
-                                      const BorderSide(color: Color(0xFF333333)),
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(14),
-                                  borderSide:
-                                      const BorderSide(color: AppColors.pink),
-                                ),
-                                filled: true,
-                                fillColor: const Color(0xFF1A1A1A),
+                                prefixIcon: Icon(Icons.person_outline_rounded),
                               ),
-                              validator: (v) =>
-                                  v == null || v.trim().isEmpty ? 'Введите имя' : null,
+                              validator: (v) => v == null || v.trim().isEmpty
+                                  ? 'Введите имя'
+                                  : null,
                             ),
                             const SizedBox(height: 14),
                           ],
                           TextFormField(
                             controller: _emailController,
                             keyboardType: TextInputType.emailAddress,
-                            style: const TextStyle(color: AppColors.white),
-                            decoration: InputDecoration(
+                            style: TextStyle(
+                              color: AppTheme.textColor(context),
+                            ),
+                            decoration: const InputDecoration(
                               labelText: 'Email',
                               hintText: 'example@mail.ru',
-                              hintStyle:
-                                  const TextStyle(color: AppColors.textSecondary),
-                              prefixIcon: const Icon(Icons.email_outlined,
-                                  color: AppColors.textSecondary),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(14),
-                                borderSide:
-                                    const BorderSide(color: Color(0xFF333333)),
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(14),
-                                borderSide:
-                                    const BorderSide(color: Color(0xFF333333)),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(14),
-                                borderSide:
-                                    const BorderSide(color: AppColors.pink),
-                              ),
-                              filled: true,
-                              fillColor: const Color(0xFF1A1A1A),
+                              prefixIcon: Icon(Icons.email_outlined),
                             ),
                             validator: (v) {
                               if (v == null || v.trim().isEmpty) {
@@ -233,42 +195,26 @@ class _LoginScreenState extends State<LoginScreen>
                           TextFormField(
                             controller: _passwordController,
                             obscureText: _obscurePassword,
-                            style: const TextStyle(color: AppColors.white),
+                            style: TextStyle(
+                              color: AppTheme.textColor(context),
+                            ),
                             decoration: InputDecoration(
                               labelText: 'Пароль',
                               hintText: 'Минимум 4 символа',
-                              hintStyle:
-                                  const TextStyle(color: AppColors.textSecondary),
-                              prefixIcon: const Icon(Icons.lock_outline,
-                                  color: AppColors.textSecondary),
+                              prefixIcon: const Icon(
+                                Icons.lock_outline_rounded,
+                              ),
                               suffixIcon: IconButton(
                                 icon: Icon(
                                   _obscurePassword
                                       ? Icons.visibility_off
                                       : Icons.visibility,
-                                  color: AppColors.textSecondary,
+                                  color: AppTheme.textSecondary(context),
                                 ),
                                 onPressed: () => setState(() {
                                   _obscurePassword = !_obscurePassword;
                                 }),
                               ),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(14),
-                                borderSide:
-                                    const BorderSide(color: Color(0xFF333333)),
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(14),
-                                borderSide:
-                                    const BorderSide(color: Color(0xFF333333)),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(14),
-                                borderSide:
-                                    const BorderSide(color: AppColors.pink),
-                              ),
-                              filled: true,
-                              fillColor: const Color(0xFF1A1A1A),
                             ),
                             validator: (v) {
                               if (v == null || v.length < 4) {
@@ -286,19 +232,25 @@ class _LoginScreenState extends State<LoginScreen>
                                   if (errorMsg != null) ...[
                                     Container(
                                       padding: const EdgeInsets.symmetric(
-                                          horizontal: 14, vertical: 10),
+                                        horizontal: 14,
+                                        vertical: 10,
+                                      ),
                                       margin: const EdgeInsets.only(bottom: 12),
                                       decoration: BoxDecoration(
-                                        color: AppColors.pink.withOpacity(0.1),
+                                        color: AppColors.primary.withValues(
+                                          alpha: 0.1,
+                                        ),
                                         borderRadius: BorderRadius.circular(10),
                                         border: Border.all(
-                                          color: AppColors.pink.withOpacity(0.3),
+                                          color: AppColors.primary.withValues(
+                                            alpha: 0.3,
+                                          ),
                                         ),
                                       ),
                                       child: Text(
                                         errorMsg,
                                         style: const TextStyle(
-                                          color: AppColors.pink,
+                                          color: AppColors.primary,
                                           fontSize: 13,
                                           fontWeight: FontWeight.w500,
                                         ),
@@ -309,11 +261,16 @@ class _LoginScreenState extends State<LoginScreen>
                                   ElevatedButton(
                                     onPressed: auth.isLoading ? null : _submit,
                                     style: ElevatedButton.styleFrom(
-                                      backgroundColor: AppColors.pink,
+                                      backgroundColor: AppColors.primary,
                                       foregroundColor: AppColors.white,
-                                      padding:
-                                          const EdgeInsets.symmetric(vertical: 18, horizontal: 24),
-                                      minimumSize: const Size(double.infinity, 56),
+                                      padding: const EdgeInsets.symmetric(
+                                        vertical: 18,
+                                        horizontal: 24,
+                                      ),
+                                      minimumSize: const Size(
+                                        double.infinity,
+                                        56,
+                                      ),
                                       shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(14),
                                       ),
@@ -328,7 +285,9 @@ class _LoginScreenState extends State<LoginScreen>
                                             ),
                                           )
                                         : Text(
-                                            _isLoginMode ? 'Войти' : 'Создать аккаунт',
+                                            _isLoginMode
+                                                ? 'Войти'
+                                                : 'Создать аккаунт',
                                             style: const TextStyle(
                                               fontSize: 17,
                                               fontWeight: FontWeight.bold,
@@ -350,7 +309,7 @@ class _LoginScreenState extends State<LoginScreen>
                                   ? 'Нет аккаунта? Зарегистрироваться'
                                   : 'Уже есть аккаунт? Войти',
                               style: const TextStyle(
-                                color: AppColors.skyBlue,
+                                color: AppColors.primary,
                                 fontSize: 14,
                               ),
                             ),
@@ -361,10 +320,7 @@ class _LoginScreenState extends State<LoginScreen>
                   ),
                   const SizedBox(height: 24),
                   // Accent line — solid pink
-                  Container(
-                    height: 3,
-                    color: AppColors.pink,
-                  ),
+                  Container(height: 3, color: AppColors.primary),
                   const SizedBox(height: 8),
                   Text(
                     'Данные хранятся только на этом устройстве',

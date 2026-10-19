@@ -7,7 +7,7 @@ import '../screens/games_screen.dart';
 import '../screens/profile_screen.dart';
 import '../screens/settings_screen.dart';
 import '../theme.dart';
-import '../data/udmurt_facts.dart';
+import '../data/vocabulary.dart';
 
 class MainMenuScreen extends StatefulWidget {
   const MainMenuScreen({super.key});
@@ -36,35 +36,36 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
         duration: const Duration(milliseconds: 250),
         child: _screens[_selectedIndex],
       ),
-      bottomNavigationBar: Container(
-        decoration: BoxDecoration(
-          boxShadow: [
-            BoxShadow(
-              color: AppTheme.shadowColor(context),
-              blurRadius: 10,
-            ),
-          ],
-        ),
-        child: BottomNavigationBar(
-          currentIndex: _selectedIndex,
-          onTap: _onItemTapped,
-          type: BottomNavigationBarType.fixed,
-          backgroundColor: AppTheme.backgroundColor(context),
-          selectedItemColor: AppColors.pink,
-          unselectedItemColor: AppTheme.textSecondary(context),
-          selectedFontSize: 11,
-          unselectedFontSize: 10,
-          elevation: 0,
-          items: const [
-            BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Главная'),
-            BottomNavigationBarItem(
-                icon: Icon(Icons.menu_book), label: 'Обучение'),
-            BottomNavigationBarItem(icon: Icon(Icons.games), label: 'Игры'),
-            BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Профиль'),
-            BottomNavigationBarItem(
-                icon: Icon(Icons.settings), label: 'Настройки'),
-          ],
-        ),
+      bottomNavigationBar: NavigationBar(
+        selectedIndex: _selectedIndex,
+        onDestinationSelected: _onItemTapped,
+        destinations: const [
+          NavigationDestination(
+            icon: Icon(Icons.home_outlined),
+            selectedIcon: Icon(Icons.home_rounded),
+            label: 'Главная',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.menu_book_outlined),
+            selectedIcon: Icon(Icons.menu_book_rounded),
+            label: 'Обучение',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.sports_esports_outlined),
+            selectedIcon: Icon(Icons.sports_esports_rounded),
+            label: 'Игры',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.person_outline_rounded),
+            selectedIcon: Icon(Icons.person_rounded),
+            label: 'Профиль',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.settings_outlined),
+            selectedIcon: Icon(Icons.settings_rounded),
+            label: 'Настройки',
+          ),
+        ],
       ),
     );
   }
@@ -77,7 +78,14 @@ class _HomeTab extends StatelessWidget {
   Widget build(BuildContext context) {
     final auth = context.watch<AuthProvider>();
     final user = auth.currentUser;
-    final randomFact = UdmurtFacts.getRandomFact();
+    final dayNumber = DateUtils.dateOnly(
+      DateTime.now(),
+    ).difference(DateTime(2020)).inDays;
+    final wordOfDay =
+        VocabularyData.words[dayNumber % VocabularyData.words.length];
+    final wordTopic = VocabularyData.topics.firstWhere(
+      (topic) => topic.id == wordOfDay.topicId,
+    );
 
     return Container(
       width: double.infinity,
@@ -92,30 +100,46 @@ class _HomeTab extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Привет, ${user?.name ?? 'Друг'}! 👋',
-                        style: TextStyle(
-                          fontSize: 26,
-                          fontWeight: FontWeight.w800,
-                          color: AppTheme.textColor(context),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          AppStrings.appName,
+                          style: const TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.primary,
+                            letterSpacing: 0.4,
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        'Готов учить удмуртский?',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: AppTheme.textSecondary(context),
+                        const SizedBox(height: 3),
+                        Text(
+                          'Привет, ${user?.name ?? 'Друг'}! 👋',
+                          style: TextStyle(
+                            fontSize: 22,
+                            fontWeight: FontWeight.w700,
+                            color: AppTheme.textColor(context),
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
-                      ),
-                    ],
+                        const SizedBox(height: 4),
+                        Text(
+                          'Готов учить удмуртский?',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: AppTheme.textSecondary(context),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                   Container(
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 14, vertical: 7),
+                      horizontal: 14,
+                      vertical: 7,
+                    ),
                     decoration: BoxDecoration(
                       color: AppTheme.cardBackground(context),
                       borderRadius: BorderRadius.circular(16),
@@ -123,8 +147,11 @@ class _HomeTab extends StatelessWidget {
                     ),
                     child: Row(
                       children: [
-                        Icon(Icons.whatshot,
-                            color: AppTheme.textColor(context), size: 18),
+                        Icon(
+                          Icons.whatshot,
+                          color: AppTheme.textColor(context),
+                          size: 18,
+                        ),
                         const SizedBox(width: 4),
                         Text(
                           '${user?.streak ?? 0}',
@@ -161,7 +188,9 @@ class _HomeTab extends StatelessWidget {
                         ),
                         Container(
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 14, vertical: 7),
+                            horizontal: 14,
+                            vertical: 7,
+                          ),
                           decoration: BoxDecoration(
                             color: AppTheme.iconBackground(context),
                             borderRadius: BorderRadius.circular(14),
@@ -181,13 +210,75 @@ class _HomeTab extends StatelessWidget {
                     LinearProgressIndicator(
                       value: ((user?.xp ?? 0) % 100) / 100,
                       backgroundColor: AppTheme.progressBackground(context),
-                      valueColor:
-                          const AlwaysStoppedAnimation<Color>(AppColors.pink),
+                      valueColor: const AlwaysStoppedAnimation<Color>(
+                        AppColors.primary,
+                      ),
                     ),
                     const SizedBox(height: 6),
                     Text(
                       '${user?.xp ?? 0} / ${(user?.level ?? 1) * 100} XP',
-                      style: TextStyle(color: AppTheme.textSecondary(context), fontSize: 13),
+                      style: TextStyle(
+                        color: AppTheme.textSecondary(context),
+                        fontSize: 13,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 24),
+              Container(
+                padding: const EdgeInsets.all(18),
+                decoration: BoxDecoration(
+                  color: AppTheme.cardBackground(context),
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: AppTheme.cardBorder(context)),
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 58,
+                      height: 58,
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        color: AppTheme.iconBackground(context),
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: Text(
+                        wordTopic.icon,
+                        style: const TextStyle(fontSize: 30),
+                      ),
+                    ),
+                    const SizedBox(width: 14),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Слово дня · ${wordTopic.title}',
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              color: AppTheme.textSecondary(context),
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            wordOfDay.udmurt,
+                            style: TextStyle(
+                              fontSize: 21,
+                              fontWeight: FontWeight.bold,
+                              color: AppTheme.textColor(context),
+                            ),
+                          ),
+                          Text(
+                            wordOfDay.russian,
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: AppTheme.textSecondary(context),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),
@@ -215,7 +306,8 @@ class _HomeTab extends StatelessWidget {
                     icon: Icons.menu_book,
                     onTap: () {
                       // Navigate to learning tab (index 1)
-                      context.findAncestorStateOfType<_MainMenuScreenState>()
+                      context
+                          .findAncestorStateOfType<_MainMenuScreenState>()
                           ?._onItemTapped(1);
                     },
                   ),
@@ -223,117 +315,25 @@ class _HomeTab extends StatelessWidget {
                     title: 'Игры',
                     icon: Icons.games,
                     onTap: () {
-                      context.findAncestorStateOfType<_MainMenuScreenState>()
+                      context
+                          .findAncestorStateOfType<_MainMenuScreenState>()
                           ?._onItemTapped(2);
-                    },
-                  ),
-                  _QuickActionCard(
-                    title: 'Факты',
-                    icon: Icons.lightbulb,
-                    onTap: () {
-                      _showFactsDialog(context);
                     },
                   ),
                   _QuickActionCard(
                     title: 'Прогресс',
                     icon: Icons.trending_up,
                     onTap: () {
-                      context.findAncestorStateOfType<_MainMenuScreenState>()
+                      context
+                          .findAncestorStateOfType<_MainMenuScreenState>()
                           ?._onItemTapped(3);
                     },
                   ),
                 ],
               ),
-              const SizedBox(height: 20),
-              Container(
-                padding: const EdgeInsets.all(18),
-                decoration: BoxDecoration(
-                  color: AppColors.skyBlue,
-                  borderRadius: BorderRadius.circular(18),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Row(
-                      children: [
-                        Icon(Icons.lightbulb, color: AppColors.black, size: 22),
-                        SizedBox(width: 10),
-                        Text(
-                          'Интересный факт',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.black,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 10),
-                    Text(
-                      randomFact,
-                      style: const TextStyle(
-                        fontSize: 13,
-                        color: AppColors.black,
-                        height: 1.5,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
             ],
           ),
         ),
-      ),
-    );
-  }
-
-  void _showFactsDialog(BuildContext context) {
-    final languageFacts = UdmurtFacts.languageFacts;
-    final udmurtiaFacts = UdmurtFacts.udmurtiaFacts;
-
-    showDialog(
-      context: context,
-      builder: (_) => AlertDialog(
-        backgroundColor: AppTheme.dialogBackground(context),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-        title: Text('Факты об удмуртском языке и Удмуртии',
-            style: TextStyle(color: AppTheme.textColor(context))),
-        content: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('🏠 Удмуртия и факты',
-                  style: TextStyle(color: AppTheme.textColor(context), fontSize: 15, fontWeight: FontWeight.bold)),
-              const SizedBox(height: 8),
-              ...udmurtiaFacts.take(5).map((fact) => Padding(
-                    padding: const EdgeInsets.only(bottom: 8),
-                    child: Text('• $fact',
-                        style: TextStyle(color: AppTheme.textSecondary(context), fontSize: 13, height: 1.5)),
-                  )),
-              const SizedBox(height: 16),
-              Text('📚 Удмуртский язык',
-                  style: TextStyle(color: AppTheme.textColor(context), fontSize: 15, fontWeight: FontWeight.bold)),
-              const SizedBox(height: 8),
-              ...languageFacts.take(5).map((fact) => Padding(
-                    padding: const EdgeInsets.only(bottom: 8),
-                    child: Text('• $fact',
-                        style: TextStyle(color: AppTheme.textSecondary(context), fontSize: 13, height: 1.5)),
-                  )),
-            ],
-          ),
-        ),
-        actions: [
-          ElevatedButton(
-            onPressed: () => Navigator.of(context).pop(),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.pink,
-              foregroundColor: AppColors.white,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-            ),
-            child: const Text('Понятно'),
-          ),
-        ],
       ),
     );
   }
@@ -369,7 +369,7 @@ class _QuickActionCard extends StatelessWidget {
                 color: AppTheme.iconBackground(context),
                 shape: BoxShape.circle,
               ),
-              child: Icon(icon, color: AppColors.pink, size: 32),
+              child: Icon(icon, color: AppColors.primary, size: 32),
             ),
             const SizedBox(height: 10),
             Text(

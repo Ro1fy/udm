@@ -12,7 +12,6 @@ class SettingsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final settings = context.watch<SettingsProvider>();
-    final isDark = AppTheme.isDark(context);
 
     return Container(
       width: double.infinity,
@@ -33,44 +32,6 @@ class SettingsScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 22),
-              Container(
-                padding: const EdgeInsets.all(22),
-                decoration: BoxDecoration(
-                  color: AppColors.pink,
-                  borderRadius: BorderRadius.circular(20),
-                  boxShadow: [
-                    BoxShadow(
-                      color: AppColors.pink.withOpacity(0.3),
-                      blurRadius: 18,
-                    ),
-                  ],
-                ),
-                child: Column(
-                  children: [
-                    const Text(
-                      '🏠 Удмурт кыл',
-                      style: TextStyle(
-                        fontSize: 26,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.white,
-                      ),
-                    ),
-                    const SizedBox(height: 6),
-                    const Text(
-                      'Версия 1.0.0',
-                      style: TextStyle(fontSize: 13, color: Colors.white70),
-                    ),
-                    const SizedBox(height: 14),
-                    const Center(
-                      child: Text(
-                        'Мобильное приложение для изучения удмуртского языка через игровые модули',
-                        style: TextStyle(fontSize: 13, color: Colors.white70),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 28),
               Text(
                 'Основные настройки',
                 style: TextStyle(
@@ -80,11 +41,12 @@ class SettingsScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 12),
-              Container(
-                decoration: BoxDecoration(
-                  color: AppTheme.cardBackground(context),
+              Material(
+                color: AppTheme.cardBackground(context),
+                clipBehavior: Clip.antiAlias,
+                shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: AppTheme.cardBorder(context)),
+                  side: BorderSide(color: AppTheme.cardBorder(context)),
                 ),
                 child: Column(
                   children: [
@@ -107,7 +69,7 @@ class SettingsScreen extends StatelessWidget {
                     _SettingTile(
                       icon: Icons.notifications,
                       title: 'Уведомления',
-                      subtitle: 'Напоминания и интересные факты',
+                      subtitle: 'Напоминания об обучении',
                       value: settings.notificationsEnabled,
                       onChanged: (v) async {
                         if (v) {
@@ -124,20 +86,24 @@ class SettingsScreen extends StatelessWidget {
                     _SettingTile(
                       icon: Icons.location_on,
                       title: 'Геолокация',
-                      subtitle: 'Слова и достопримечательности рядом',
+                      subtitle: 'Использование местоположения',
                       value: settings.geolocationEnabled,
                       onChanged: (v) async {
                         if (v) {
-                          final s = await Permission.locationWhenInUse.request();
+                          final s = await Permission.locationWhenInUse
+                              .request();
                           if (s.isGranted) {
-                            final isEnabled = await GeolocationService.isLocationServiceEnabled();
+                            final isEnabled =
+                                await GeolocationService.isLocationServiceEnabled();
                             if (isEnabled) {
                               settings.toggleGeolocation(true);
                               if (context.mounted) {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
-                                    content: const Text('✓ Геолокация включена. Вы будете получать уведомления о достопримечательностях рядом.'),
-                                    backgroundColor: AppColors.pink,
+                                    content: const Text(
+                                      '✓ Геолокация включена. Вы будете получать уведомления о достопримечательностях рядом.',
+                                    ),
+                                    backgroundColor: AppColors.primary,
                                     duration: const Duration(seconds: 3),
                                   ),
                                 );
@@ -146,7 +112,9 @@ class SettingsScreen extends StatelessWidget {
                               if (context.mounted) {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(
-                                    content: Text('Включите службу геолокации в настройках устройства'),
+                                    content: Text(
+                                      'Включите службу геолокации в настройках устройства',
+                                    ),
                                     backgroundColor: Colors.red,
                                   ),
                                 );
@@ -156,7 +124,9 @@ class SettingsScreen extends StatelessWidget {
                             if (context.mounted) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
-                                  content: Text('Разрешите доступ к геолокации для получения уведомлений о достопримечательностях'),
+                                  content: Text(
+                                    'Разрешите доступ к геолокации для получения уведомлений о достопримечательностях',
+                                  ),
                                   backgroundColor: Colors.red,
                                 ),
                               );
@@ -170,110 +140,9 @@ class SettingsScreen extends StatelessWidget {
                   ],
                 ),
               ),
-              const SizedBox(height: 28),
-              Text(
-                'Интересные факты',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: AppTheme.textColor(context),
-                ),
-              ),
-              const SizedBox(height: 12),
-              Container(
-                decoration: BoxDecoration(
-                  color: AppTheme.cardBackground(context),
-                  borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: AppTheme.cardBorder(context)),
-                ),
-                child: Column(
-                  children: [
-                    const _InfoTile(
-                      icon: Icons.language,
-                      title: 'Удмуртский язык',
-                      subtitle: 'Финно-угорская языковая семья',
-                    ),
-                    Divider(height: 1, color: AppTheme.dividerColor(context)),
-                    const _InfoTile(
-                      icon: Icons.people,
-                      title: 'Носителей',
-                      subtitle: '~324 000 человек',
-                    ),
-                    Divider(height: 1, color: AppTheme.dividerColor(context)),
-                    const _InfoTile(
-                      icon: Icons.warning_amber,
-                      title: 'Статус ЮНЕСКО',
-                      subtitle: 'Под угрозой исчезновения (с 2013 г.)',
-                    ),
-                    Divider(height: 1, color: AppTheme.dividerColor(context)),
-                    ListTile(
-                      leading: Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: AppColors.pink.withOpacity(0.12),
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: const Icon(Icons.info, color: AppColors.pink),
-                      ),
-                      title: Text('Подробнее о языке',
-                          style: TextStyle(color: AppTheme.textColor(context))),
-                      trailing: const Icon(Icons.chevron_right,
-                          color: AppColors.textSecondary),
-                      onTap: () => _showLanguageDetails(context),
-                    ),
-                  ],
-                ),
-              ),
             ],
           ),
         ),
-      ),
-    );
-  }
-
-  void _showLanguageDetails(BuildContext context) {
-    final isDark = AppTheme.isDark(context);
-    showDialog(
-      context: context,
-      builder: (_) => AlertDialog(
-        backgroundColor: AppTheme.dialogBackground(context),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-        title: Text('Удмуртский язык',
-            style: TextStyle(color: AppTheme.textColor(context))),
-        content: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('Общие сведения',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.skyBlue)),
-              SizedBox(height: 6),
-              Text(
-                'Удмуртский язык (удмурт кыл) — язык удмуртов, один из финно-угорских языков.',
-                style: TextStyle(fontSize: 13, height: 1.5, color: AppTheme.textSecondary(context)),
-              ),
-              SizedBox(height: 14),
-              Text('Алфавит',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.skyBlue)),
-              SizedBox(height: 6),
-              Text(
-                'Основан на кириллице. Дополнительные буквы: Ӝ/ӝ, Ӟ/ӟ, Ӥ/ӥ, Ӧ/ӧ, Ӵ/ӵ.',
-                style: TextStyle(fontSize: 13, height: 1.5, color: AppTheme.textSecondary(context)),
-              ),
-            ],
-          ),
-        ),
-        actions: [
-          ElevatedButton(
-            onPressed: () => Navigator.of(context).pop(),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.pink,
-              foregroundColor: AppColors.white,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-            ),
-            child: const Text('Закрыть'),
-          ),
-        ],
       ),
     );
   }
@@ -304,44 +173,24 @@ class _SettingTile extends StatelessWidget {
           color: AppTheme.iconBackground(context),
           borderRadius: BorderRadius.circular(10),
         ),
-        child: Icon(icon, color: AppColors.pink, size: 22),
+        child: Icon(icon, color: AppColors.primary, size: 22),
       ),
-      title: Text(title,
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: AppTheme.textColor(context))),
-      subtitle: Text(subtitle,
-          style: TextStyle(fontSize: 11, color: AppTheme.textSecondary(context))),
+      title: Text(
+        title,
+        style: TextStyle(
+          fontWeight: FontWeight.bold,
+          fontSize: 15,
+          color: AppTheme.textColor(context),
+        ),
+      ),
+      subtitle: Text(
+        subtitle,
+        style: TextStyle(fontSize: 11, color: AppTheme.textSecondary(context)),
+      ),
       value: value,
       onChanged: onChanged,
-      activeThumbColor: AppColors.pink,
+      activeThumbColor: AppColors.primary,
       inactiveTrackColor: AppTheme.switchInactiveTrack(context),
     );
   }
 }
-
-class _InfoTile extends StatelessWidget {
-  final IconData icon;
-  final String title;
-  final String subtitle;
-
-  const _InfoTile({required this.icon, required this.title, required this.subtitle});
-
-  @override
-  Widget build(BuildContext context) {
-    return ListTile(
-      contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-      leading: Container(
-        padding: const EdgeInsets.all(9),
-        decoration: BoxDecoration(
-          color: AppTheme.iconBackground(context),
-          borderRadius: BorderRadius.circular(10),
-        ),
-        child: Icon(icon, color: AppColors.pink, size: 22),
-      ),
-      title: Text(title,
-          style: TextStyle(fontWeight: FontWeight.bold, color: AppTheme.textColor(context))),
-      subtitle: Text(subtitle,
-          style: TextStyle(color: AppTheme.textSecondary(context))),
-    );
-  }
-}
-

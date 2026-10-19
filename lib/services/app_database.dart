@@ -100,6 +100,9 @@ class UserBox {
   @HiveField(10)
   Map<String, int> gameStatsBestScore;
 
+  @HiveField(12)
+  Map<String, int> learnedWordsReal;
+
   UserBox({
     required this.id,
     required this.name,
@@ -113,10 +116,12 @@ class UserBox {
     Map<String, int>? gameStatsPlayed,
     Map<String, int>? gameStatsCorrect,
     Map<String, int>? gameStatsBestScore,
-  })  : wordsLearned = wordsLearned ?? {},
-        gameStatsPlayed = gameStatsPlayed ?? {},
-        gameStatsCorrect = gameStatsCorrect ?? {},
-        gameStatsBestScore = gameStatsBestScore ?? {};
+    Map<String, int>? learnedWordsReal,
+  }) : wordsLearned = wordsLearned ?? {},
+       gameStatsPlayed = gameStatsPlayed ?? {},
+       gameStatsCorrect = gameStatsCorrect ?? {},
+       gameStatsBestScore = gameStatsBestScore ?? {},
+       learnedWordsReal = learnedWordsReal ?? {};
 
   UserBox copyWith({
     String? id,
@@ -131,6 +136,7 @@ class UserBox {
     Map<String, int>? gameStatsPlayed,
     Map<String, int>? gameStatsCorrect,
     Map<String, int>? gameStatsBestScore,
+    Map<String, int>? learnedWordsReal,
   }) {
     return UserBox(
       id: id ?? this.id,
@@ -145,6 +151,7 @@ class UserBox {
       gameStatsPlayed: gameStatsPlayed ?? this.gameStatsPlayed,
       gameStatsCorrect: gameStatsCorrect ?? this.gameStatsCorrect,
       gameStatsBestScore: gameStatsBestScore ?? this.gameStatsBestScore,
+      learnedWordsReal: learnedWordsReal ?? this.learnedWordsReal,
     );
   }
 }
@@ -175,7 +182,7 @@ class SettingsBox {
     this.geolocationEnabled = false,
     this.lastLocationWordId = '',
     this.currentUserId = '',
-    this.isDarkMode = true,
+    this.isDarkMode = false,
   });
 }
 

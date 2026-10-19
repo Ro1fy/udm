@@ -14,12 +14,12 @@ class AppTheme {
 
   /// Card/container background color
   static Color cardBackground(BuildContext context) {
-    return isDark(context) ? const Color(0xFF1A1A1A) : AppColors.white;
+    return isDark(context) ? AppColors.cardDark : AppColors.cardLight;
   }
 
   /// Card border color
   static Color cardBorder(BuildContext context) {
-    return isDark(context) ? const Color(0xFF2A2A2A) : const Color(0xFFE0E0E0);
+    return isDark(context) ? AppColors.cardBorder : AppColors.cardBorderLight;
   }
 
   /// Primary text color
@@ -29,47 +29,49 @@ class AppTheme {
 
   /// Secondary text color
   static Color textSecondary(BuildContext context) {
-    return isDark(context) ? AppColors.textSecondary : const Color(0xFF666666);
+    return isDark(context)
+        ? AppColors.textSecondary
+        : AppColors.textSecondaryLight;
   }
 
   /// Divider color
   static Color dividerColor(BuildContext context) {
-    return isDark(context) ? const Color(0xFF2A2A2A) : const Color(0xFFE0E0E0);
+    return isDark(context) ? AppColors.cardBorder : AppColors.cardBorderLight;
   }
 
   /// Icon container background
   static Color iconBackground(BuildContext context) {
-    return isDark(context) ? const Color(0xFF2A2A2A) : AppColors.pink.withOpacity(0.12);
+    return AppColors.primary.withValues(alpha: isDark(context) ? 0.2 : 0.1);
   }
 
   /// Progress indicator background
   static Color progressBackground(BuildContext context) {
-    return isDark(context) ? const Color(0xFF333333) : const Color(0xFFE0E0E0);
+    return isDark(context) ? AppColors.cardBorder : AppColors.cardBorderLight;
   }
 
   /// Switch inactive track color
   static Color switchInactiveTrack(BuildContext context) {
-    return isDark(context) ? const Color(0xFF333333) : const Color(0xFFBDBDBD);
+    return isDark(context) ? AppColors.cardBorder : const Color(0xFFD0D2CC);
   }
 
   /// Text field fill color
   static Color textFieldFill(BuildContext context) {
-    return isDark(context) ? const Color(0xFF1A1A1A) : AppColors.white;
+    return isDark(context) ? AppColors.cardDark : AppColors.cardLight;
   }
 
   /// Text field border color
   static Color textFieldBorder(BuildContext context) {
-    return isDark(context) ? const Color(0xFF333333) : const Color(0xFFCCCCCC);
+    return isDark(context) ? AppColors.cardBorder : AppColors.cardBorderLight;
   }
 
   /// Shadow color
   static Color shadowColor(BuildContext context) {
-    return isDark(context) ? AppColors.black.withOpacity(0.3) : const Color(0xFF000000).withOpacity(0.1);
+    return AppColors.black.withValues(alpha: isDark(context) ? 0.22 : 0.05);
   }
 
   /// Dialog background color
   static Color dialogBackground(BuildContext context) {
-    return isDark(context) ? const Color(0xFF1A1A1A) : AppColors.white;
+    return isDark(context) ? AppColors.cardDark : AppColors.cardLight;
   }
 
   /// Game background color
@@ -89,7 +91,9 @@ class AppTheme {
 
   /// Game text secondary color
   static Color gameTextSecondaryColor(BuildContext context) {
-    return isDark(context) ? AppColors.gameTextSecondaryDark : AppColors.gameTextSecondaryLight;
+    return isDark(context)
+        ? AppColors.gameTextSecondaryDark
+        : AppColors.gameTextSecondaryLight;
   }
 
   /// Game card border color
@@ -112,23 +116,25 @@ class AppTheme {
     return InputDecoration(
       labelText: labelText,
       hintText: hintText,
-      hintStyle: TextStyle(color: AppColors.textSecondary),
-      prefixIcon: prefixIcon != null ? Icon(prefixIcon, color: AppColors.textSecondary) : null,
+      hintStyle: const TextStyle(color: AppColors.textSecondaryLight),
+      prefixIcon: prefixIcon == null
+          ? null
+          : Icon(prefixIcon, color: AppColors.textSecondaryLight),
       suffixIcon: suffixIcon,
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(14),
-        borderSide: const BorderSide(color: Color(0xFF333333)),
+        borderSide: const BorderSide(color: AppColors.cardBorderLight),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(14),
-        borderSide: const BorderSide(color: Color(0xFF333333)),
+        borderSide: const BorderSide(color: AppColors.cardBorderLight),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(14),
-        borderSide: const BorderSide(color: AppColors.pink),
+        borderSide: const BorderSide(color: AppColors.primary),
       ),
       filled: true,
-      fillColor: const Color(0xFF1A1A1A),
+      fillColor: AppColors.cardLight,
     );
   }
 }

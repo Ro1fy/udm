@@ -55,21 +55,25 @@ class _TopicCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final auth = context.watch<AuthProvider>();
+    final user = auth.currentUser;
+
+    final totalWords = topic.wordIds.length;
+    final learnedWords = topic.wordIds.toSet().intersection(user!.learnedWordsReal.keys.toSet()).length;
+
     return GestureDetector(
       onTap: () {
         Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (_) => TopicWordsScreen(topic: topic),
-          ),
+          MaterialPageRoute(builder: (_) => TopicWordsScreen(topic: topic)),
         );
       },
       child: Container(
         margin: const EdgeInsets.only(bottom: 12),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: AppTheme.cardBackground(context),
+          color: totalWords == learnedWords ? AppTheme.cardBackground(context) : AppTheme.cardBackground(context),
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: AppTheme.cardBorder(context)),
+          border: Border.all(color: totalWords == learnedWords ? AppColors.success : AppTheme.cardBorder(context)),
         ),
         child: Row(
           children: [
@@ -77,8 +81,8 @@ class _TopicCard extends StatelessWidget {
               width: 56,
               height: 56,
               decoration: BoxDecoration(
-                color: AppColors.pink,
-                borderRadius: BorderRadius.circular(14),
+                color: AppTheme.iconBackground(context),
+                borderRadius: BorderRadius.circular(16),
               ),
               child: Center(
                 child: Text(topic.icon, style: const TextStyle(fontSize: 28)),
@@ -93,7 +97,7 @@ class _TopicCard extends StatelessWidget {
                     topic.title,
                     style: TextStyle(
                       fontSize: 16,
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w600,
                       color: AppTheme.textColor(context),
                     ),
                   ),
@@ -102,13 +106,21 @@ class _TopicCard extends StatelessWidget {
                     topic.titleUdmurt,
                     style: const TextStyle(
                       fontSize: 13,
-                      color: AppColors.pink,
+                      color: AppColors.primary,
                       fontStyle: FontStyle.italic,
                     ),
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    '${topic.wordIds.length} слов',
+                    '$totalWords слов',
+                    style: TextStyle(
+                      fontSize: 11,
+                      color: AppTheme.textSecondary(context),
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    'Выучено: $learnedWords слов',
                     style: TextStyle(
                       fontSize: 11,
                       color: AppTheme.textSecondary(context),
@@ -117,7 +129,7 @@ class _TopicCard extends StatelessWidget {
                 ],
               ),
             ),
-            const Icon(Icons.chevron_right, color: AppColors.pink, size: 24),
+            const Icon(Icons.chevron_right, color: AppColors.primary, size: 24),
           ],
         ),
       ),
@@ -169,18 +181,18 @@ class _TopicWordsScreenState extends State<TopicWordsScreen> {
 
   void _markLearned() {
     if (_isLearned) return;
-    
+
     // Add to learned set
     _learnedWordIds.add(_words[_currentIndex].id);
-    
+
     setState(() {
       _isLearned = true;
       _sessionLearnedCount++;
     });
-    
-    context.read<AuthProvider>().markWordLearned(widget.topic.id);
+
+    context.read<AuthProvider>().markWordLearned(_words[_currentIndex].id);
     context.read<AuthProvider>().addXP(10);
-    
+
     // Show notification from top with animation
     final overlay = Overlay.of(context);
     final overlayEntry = OverlayEntry(
@@ -210,7 +222,7 @@ class _TopicWordsScreenState extends State<TopicWordsScreen> {
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
-                    color: AppColors.success.withOpacity(0.4),
+                    color: AppColors.success.withValues(alpha: 0.4),
                     blurRadius: 12,
                     offset: const Offset(0, 4),
                   ),
@@ -238,7 +250,7 @@ class _TopicWordsScreenState extends State<TopicWordsScreen> {
     );
 
     overlay.insert(overlayEntry);
-    
+
     // Auto-dismiss after 2 seconds with fade out
     Future.delayed(const Duration(seconds: 2), () {
       overlayEntry.markNeedsBuild();
@@ -284,15 +296,10 @@ class _TopicWordsScreenState extends State<TopicWordsScreen> {
                 child: Container(
                   width: double.infinity,
                   padding: const EdgeInsets.all(24),
-                  decoration: const BoxDecoration(
-                    color: AppColors.pink,
-                  ),
+                  decoration: const BoxDecoration(color: AppColors.primary),
                   child: Column(
                     children: [
-                      const Text(
-                        '🎓',
-                        style: TextStyle(fontSize: 72),
-                      ),
+                      const Text('🎓', style: TextStyle(fontSize: 72)),
                       const SizedBox(height: 16),
                       const Text(
                         'Поздравляем!',
@@ -307,7 +314,7 @@ class _TopicWordsScreenState extends State<TopicWordsScreen> {
                         'Ты изучил все слова по теме',
                         style: TextStyle(
                           fontSize: 16,
-                          color: Colors.white.withOpacity(0.9),
+                          color: Colors.white.withValues(alpha: 0.9),
                         ),
                       ),
                       const SizedBox(height: 8),
@@ -359,10 +366,10 @@ class _TopicWordsScreenState extends State<TopicWordsScreen> {
                     Container(
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: AppColors.success.withOpacity(0.1),
+                        color: AppColors.success.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(
-                          color: AppColors.success.withOpacity(0.3),
+                          color: AppColors.success.withValues(alpha: 0.3),
                         ),
                       ),
                       child: Row(
@@ -431,14 +438,14 @@ class _TopicWordsScreenState extends State<TopicWordsScreen> {
                           _resetProgress();
                         },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.pink,
+                          backgroundColor: AppColors.primary,
                           foregroundColor: Colors.white,
                           padding: const EdgeInsets.symmetric(vertical: 16),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
                           elevation: 4,
-                          shadowColor: AppColors.pink,
+                          shadowColor: AppColors.primary,
                         ),
                         child: const Text(
                           'ПОВТОРИТЬ',
@@ -470,7 +477,7 @@ class _TopicWordsScreenState extends State<TopicWordsScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
-        color: AppColors.pink.withOpacity(0.05),
+        color: AppColors.primary.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Column(
@@ -487,10 +494,7 @@ class _TopicWordsScreenState extends State<TopicWordsScreen> {
           ),
           Text(
             label,
-            style: TextStyle(
-              fontSize: 11,
-              color: textSecondaryColor,
-            ),
+            style: TextStyle(fontSize: 11, color: textSecondaryColor),
             textAlign: TextAlign.center,
           ),
         ],
@@ -505,6 +509,16 @@ class _TopicWordsScreenState extends State<TopicWordsScreen> {
       _sessionLearnedCount = 0;
       _learnedWordIds = {};
     });
+  }
+
+  void _nextWordButton() {
+    _currentIndex < _words.length - 1
+        ? _nextWord
+        : null;
+  }
+
+  void _prevWordButton() {
+    _currentIndex > 0 ? _prevWord : null;
   }
 
   @override
@@ -524,7 +538,10 @@ class _TopicWordsScreenState extends State<TopicWordsScreen> {
                 child: Row(
                   children: [
                     IconButton(
-                      icon: Icon(Icons.arrow_back, color: AppTheme.textColor(context)),
+                      icon: Icon(
+                        Icons.arrow_back,
+                        color: AppTheme.textColor(context),
+                      ),
                       onPressed: () => Navigator.of(context).pop(),
                     ),
                     Expanded(
@@ -557,8 +574,9 @@ class _TopicWordsScreenState extends State<TopicWordsScreen> {
                 child: LinearProgressIndicator(
                   value: (_currentIndex + 1) / _words.length,
                   backgroundColor: AppTheme.progressBackground(context),
-                  valueColor:
-                      const AlwaysStoppedAnimation<Color>(AppColors.pink),
+                  valueColor: const AlwaysStoppedAnimation<Color>(
+                    AppColors.primary,
+                  ),
                 ),
               ),
               const SizedBox(height: 20),
@@ -578,16 +596,16 @@ class _TopicWordsScreenState extends State<TopicWordsScreen> {
                   children: [
                     Expanded(
                       child: ElevatedButton.icon(
-                        onPressed: _currentIndex > 0 ? _prevWord : null,
+                        onPressed: _prevWordButton,
                         icon: const Icon(Icons.arrow_back),
                         label: const Text('Назад'),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppTheme.cardBackground(context),
-                          foregroundColor: AppColors.pink,
+                          foregroundColor: AppColors.primary,
                           padding: const EdgeInsets.symmetric(vertical: 15),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(14),
-                            side: const BorderSide(color: AppColors.pink),
+                            side: const BorderSide(color: AppColors.primary),
                           ),
                         ),
                       ),
@@ -595,13 +613,11 @@ class _TopicWordsScreenState extends State<TopicWordsScreen> {
                     const SizedBox(width: 12),
                     Expanded(
                       child: ElevatedButton.icon(
-                        onPressed: _currentIndex < _words.length - 1
-                            ? _nextWord
-                            : null,
+                        onPressed: _prevWordButton,
                         icon: const Icon(Icons.arrow_forward),
                         label: const Text('Далее'),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.pink,
+                          backgroundColor: AppColors.primary,
                           foregroundColor: AppColors.white,
                           padding: const EdgeInsets.symmetric(vertical: 15),
                           shape: RoundedRectangleBorder(
