@@ -512,13 +512,11 @@ class _TopicWordsScreenState extends State<TopicWordsScreen> {
   }
 
   void _nextWordButton() {
-    _currentIndex < _words.length - 1
-        ? _nextWord
-        : null;
+
   }
 
   void _prevWordButton() {
-    _currentIndex > 0 ? _prevWord : null;
+
   }
 
   @override
@@ -596,7 +594,7 @@ class _TopicWordsScreenState extends State<TopicWordsScreen> {
                   children: [
                     Expanded(
                       child: ElevatedButton.icon(
-                        onPressed: _prevWordButton,
+                        onPressed: _currentIndex > 0 ? _prevWord : null,
                         icon: const Icon(Icons.arrow_back),
                         label: const Text('Назад'),
                         style: ElevatedButton.styleFrom(
@@ -613,7 +611,9 @@ class _TopicWordsScreenState extends State<TopicWordsScreen> {
                     const SizedBox(width: 12),
                     Expanded(
                       child: ElevatedButton.icon(
-                        onPressed: _prevWordButton,
+                        onPressed: _currentIndex < _words.length - 1
+                            ? _nextWord
+                            : null,
                         icon: const Icon(Icons.arrow_forward),
                         label: const Text('Далее'),
                         style: ElevatedButton.styleFrom(
