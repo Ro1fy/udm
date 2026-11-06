@@ -21,6 +21,7 @@ class GameModeScreen extends StatefulWidget {
 
 class _GameModeScreenState extends State<GameModeScreen> {
   List<Word> _questions = [];
+  List<int> _usedIndices = [];
   int _currentIndex = 0;
   int _score = 0;
   List<QuestionResult> _results = [];
@@ -73,6 +74,7 @@ class _GameModeScreenState extends State<GameModeScreen> {
     letters.shuffle(Random());
     setState(() {
       _scrambledLetters = letters;
+      _usedIndices = [];
       _userAnswer = '';
     });
   }
@@ -826,12 +828,13 @@ class _GameModeScreenState extends State<GameModeScreen> {
           runSpacing: 8,
           alignment: WrapAlignment.center,
           children: List.generate(_scrambledLetters.length, (index) {
-            final isUsed = _userAnswer.contains(_scrambledLetters[index]);
+            final isUsed = _usedIndices.contains(index);   // ← проверяем индекс, а не букву
 
             return GestureDetector(
               onTap: () {
                 if (!isUsed && _userAnswer.length < _scrambledLetters.length) {
                   setState(() {
+                    _usedIndices.add(index);                             // ← запоминаем индекс
                     _userAnswer += _scrambledLetters[index];
                     if (_userAnswer.length == _scrambledLetters.length) {
                       _checkScrambleAnswer();
@@ -868,16 +871,15 @@ class _GameModeScreenState extends State<GameModeScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             ElevatedButton.icon(
-              onPressed: _userAnswer.isEmpty
+              onPressed: _usedIndices.isEmpty
                   ? null
                   : () {
-                      setState(() {
-                        _userAnswer = _userAnswer.substring(
-                          0,
-                          _userAnswer.length - 1,
-                        );
-                      });
-                    },
+                setState(() {
+                  _usedIndices.removeLast();                 // ← освобождаем конкретную плитку
+                  _userAnswer =
+                      _userAnswer.substring(0, _userAnswer.length - 1);
+                });
+              },
               icon: const Icon(Icons.backspace),
               label: const Text('Стереть'),
               style: ElevatedButton.styleFrom(

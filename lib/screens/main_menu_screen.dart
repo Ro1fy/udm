@@ -302,7 +302,7 @@ class _HomeTab extends StatelessWidget {
                 childAspectRatio: 1.2,
                 children: [
                   _QuickActionCard(
-                    title: 'Словарь',
+                    title: 'Обучение',
                     icon: Icons.menu_book,
                     onTap: () {
                       // Navigate to learning tab (index 1)
