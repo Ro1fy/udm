@@ -128,13 +128,14 @@ class UserBoxAdapter extends TypeAdapter<UserBox> {
       gameStatsCorrect: (fields[9] as Map?)?.cast<String, int>(),
       gameStatsBestScore: (fields[10] as Map?)?.cast<String, int>(),
       learnedWordsReal: (fields[12] as Map?)?.cast<String, int>(),
+      avatar: fields[13] as String? ?? '',
     );
   }
 
   @override
   void write(BinaryWriter writer, UserBox obj) {
     writer
-      ..writeByte(13)
+      ..writeByte(14)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -160,7 +161,9 @@ class UserBoxAdapter extends TypeAdapter<UserBox> {
       ..writeByte(10)
       ..write(obj.gameStatsBestScore)
       ..writeByte(12)
-      ..write(obj.learnedWordsReal);
+      ..write(obj.learnedWordsReal)
+      ..writeByte(13)
+      ..write(obj.avatar);
   }
 
   @override

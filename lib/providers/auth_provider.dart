@@ -90,6 +90,13 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> updateAvatar(String avatar) async {
+    if (_currentUser == null) return;
+    _currentUser = _currentUser!.copyWith(avatar: avatar);
+    await AppDatabase.saveUser(_currentUser!);
+    notifyListeners();
+  }
+
   Future<void> changePassword(String newPassword) async {
     if (_currentUser == null) return;
     _currentUser = _currentUser!.copyWith(password: newPassword);

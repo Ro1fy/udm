@@ -5,7 +5,6 @@ import '../constants.dart';
 import '../data/vocabulary.dart';
 import '../models/word.dart';
 import '../providers/auth_provider.dart';
-import '../providers/settings_provider.dart';
 import '../services/sound_service.dart';
 import '../theme.dart';
 
@@ -827,16 +826,11 @@ class _GameModeScreenState extends State<GameModeScreen> {
           runSpacing: 8,
           alignment: WrapAlignment.center,
           children: List.generate(_scrambledLetters.length, (index) {
-            final isUsed =
-                _userAnswer
-                    .split('')
-                    .where((e) => e == _scrambledLetters[index])
-                    .length >=
-                _scrambledLetters.indexOf(_scrambledLetters[index]) + 1;
+            final isUsed = _userAnswer.contains(_scrambledLetters[index]);
 
             return GestureDetector(
               onTap: () {
-                if (_userAnswer.length < _scrambledLetters.length) {
+                if (!isUsed && _userAnswer.length < _scrambledLetters.length) {
                   setState(() {
                     _userAnswer += _scrambledLetters[index];
                     if (_userAnswer.length == _scrambledLetters.length) {
@@ -898,7 +892,7 @@ class _GameModeScreenState extends State<GameModeScreen> {
               label: const Text('Перемешать'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.accent,
-                foregroundColor: AppColors.textOnLight,
+                foregroundColor: AppColors.white,
               ),
             ),
           ],

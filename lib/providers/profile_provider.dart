@@ -88,6 +88,7 @@ class ProfileProvider extends ChangeNotifier {
       email: '',
       password: _profile!.password,
       createdAt: _profile!.createdAt,
+      avatar: _profile!.avatar,
     );
     await AppDatabase.saveUser(_profile!);
     notifyListeners();

@@ -40,12 +40,13 @@ class _ExtraGameScreenState extends State<ExtraGameScreen> {
   final Set<String> _sortedWordIds = {};
   final Set<int> _openCards = {};
   final Set<int> _matchedCards = {};
+  final Set<int> _wrongCards = {};
   bool _checkingPair = false;
   bool _finished = false;
 
   String get _title => switch (widget.mode) {
     ExtraGameMode.findOdd => 'Найди лишнее слово',
-    ExtraGameMode.sortWords => 'Распредели по темам',
+    ExtraGameMode.sortWords => 'Сортировка',
     ExtraGameMode.memoryPairs => 'Найди пару',
   };
 
@@ -184,11 +185,13 @@ class _ExtraGameScreenState extends State<ExtraGameScreen> {
     }
 
     _checkingPair = true;
+    setState(() => _wrongCards.addAll(opened));
     SoundService.playIncorrect();
     Timer(const Duration(milliseconds: 800), () {
       if (!mounted) return;
       setState(() {
         _openCards.clear();
+        _wrongCards.clear();
         _checkingPair = false;
       });
     });
@@ -524,9 +527,7 @@ class _ExtraGameScreenState extends State<ExtraGameScreen> {
       onWillAcceptWithDetails: (_) => true,
       onAcceptWithDetails: (details) => _sortWord(details.data, topic),
       builder: (context, candidates, rejected) {
-        final highlighted =
-            candidates.isNotEmpty ||
-            (_selectedWord != null && _selectedWord!.topicId == topic.id);
+        final highlighted = candidates.isNotEmpty;
         return InkWell(
           onTap: _selectedWord == null
               ? null
@@ -590,36 +591,49 @@ class _ExtraGameScreenState extends State<ExtraGameScreen> {
         final isOpen =
             _openCards.contains(index) || _matchedCards.contains(index);
         final isMatched = _matchedCards.contains(index);
-        return InkWell(
-          onTap: () => _openMemoryCard(index),
-          borderRadius: BorderRadius.circular(18),
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 180),
-            decoration: BoxDecoration(
-              color: isMatched
-                  ? AppColors.success.withValues(alpha: 0.14)
-                  : isOpen
-                  ? AppTheme.iconBackground(context)
-                  : AppTheme.cardBackground(context),
-              borderRadius: BorderRadius.circular(18),
-              border: Border.all(
-                color: isMatched
-                    ? AppColors.success
+        final isWrong = _wrongCards.contains(index);
+        return AnimatedScale(
+          scale: isWrong ? 1.05 : 1,
+          duration: const Duration(milliseconds: 180),
+          child: InkWell(
+            onTap: () => _openMemoryCard(index),
+            borderRadius: BorderRadius.circular(18),
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 180),
+              decoration: BoxDecoration(
+                color: isWrong
+                    ? AppColors.error.withValues(alpha: 0.14)
+                    : isMatched
+                    ? AppColors.success.withValues(alpha: 0.14)
                     : isOpen
-                    ? AppColors.primary
-                    : AppTheme.cardBorder(context),
-              ),
-            ),
-            padding: const EdgeInsets.all(12),
-            child: Center(
-              child: Text(
-                isOpen ? card.label : '?',
-                style: TextStyle(
-                  color: isMatched ? AppColors.success : textColor,
-                  fontSize: isOpen ? 17 : 32,
-                  fontWeight: FontWeight.w600,
+                    ? AppTheme.iconBackground(context)
+                    : AppTheme.cardBackground(context),
+                borderRadius: BorderRadius.circular(18),
+                border: Border.all(
+                  color: isWrong
+                      ? AppColors.error
+                      : isMatched
+                      ? AppColors.success
+                      : isOpen
+                      ? AppColors.primary
+                      : AppTheme.cardBorder(context),
                 ),
-                textAlign: TextAlign.center,
+              ),
+              padding: const EdgeInsets.all(12),
+              child: Center(
+                child: Text(
+                  isOpen ? card.label : '?',
+                  style: TextStyle(
+                    color: isWrong
+                        ? AppColors.error
+                        : isMatched
+                        ? AppColors.success
+                        : textColor,
+                    fontSize: isOpen ? 17 : 32,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
               ),
             ),
           ),

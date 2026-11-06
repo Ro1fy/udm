@@ -329,6 +329,15 @@ class _HomeTab extends StatelessWidget {
                           ?._onItemTapped(3);
                     },
                   ),
+                  _QuickActionCard(
+                    title: 'Настройки',
+                    icon: Icons.settings,
+                    onTap: () {
+                      context
+                          .findAncestorStateOfType<_MainMenuScreenState>()
+                          ?._onItemTapped(4);
+                    },
+                  ),
                 ],
               ),
             ],

@@ -103,6 +103,9 @@ class UserBox {
   @HiveField(12)
   Map<String, int> learnedWordsReal;
 
+  @HiveField(13)
+  String avatar;
+
   UserBox({
     required this.id,
     required this.name,
@@ -117,6 +120,7 @@ class UserBox {
     Map<String, int>? gameStatsCorrect,
     Map<String, int>? gameStatsBestScore,
     Map<String, int>? learnedWordsReal,
+    this.avatar = '',
   }) : wordsLearned = wordsLearned ?? {},
        gameStatsPlayed = gameStatsPlayed ?? {},
        gameStatsCorrect = gameStatsCorrect ?? {},
@@ -137,6 +141,7 @@ class UserBox {
     Map<String, int>? gameStatsCorrect,
     Map<String, int>? gameStatsBestScore,
     Map<String, int>? learnedWordsReal,
+    String? avatar,
   }) {
     return UserBox(
       id: id ?? this.id,
@@ -152,6 +157,7 @@ class UserBox {
       gameStatsCorrect: gameStatsCorrect ?? this.gameStatsCorrect,
       gameStatsBestScore: gameStatsBestScore ?? this.gameStatsBestScore,
       learnedWordsReal: learnedWordsReal ?? this.learnedWordsReal,
+      avatar: avatar ?? this.avatar,
     );
   }
 }

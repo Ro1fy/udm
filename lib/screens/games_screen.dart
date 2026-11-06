@@ -3,6 +3,7 @@ import '../constants.dart';
 import '../screens/game_mode_screen.dart';
 import '../screens/extra_game_screen.dart';
 import '../theme.dart';
+import '../widgets/udmurt_pattern.dart';
 
 class GamesScreen extends StatelessWidget {
   const GamesScreen({super.key});
@@ -44,7 +45,6 @@ class GamesScreen extends StatelessWidget {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 12),
                   _GameModeCard(
                     title: 'Найди лишнее слово',
                     description: 'Найди слово, которое относится к другой теме',
@@ -54,18 +54,16 @@ class GamesScreen extends StatelessWidget {
                       const ExtraGameScreen(mode: ExtraGameMode.findOdd),
                     ),
                   ),
-                  const SizedBox(height: 12),
                   _GameModeCard(
-                    title: 'Распредели по темам',
+                    title: 'Сортировка',
                     description:
-                        'Перетащи слова в подходящие тематические группы',
-                    icon: Icons.drag_indicator_rounded,
+                        'Распредели слова по подходящим тематическим группам',
+                    icon: Icons.sort_rounded,
                     onTap: () => _openGame(
                       context,
                       const ExtraGameScreen(mode: ExtraGameMode.sortWords),
                     ),
                   ),
-                  const SizedBox(height: 12),
                   _GameModeCard(
                     title: 'Найди пару',
                     description: 'Сопоставь удмуртское слово с переводом',
@@ -75,7 +73,6 @@ class GamesScreen extends StatelessWidget {
                       const ExtraGameScreen(mode: ExtraGameMode.memoryPairs),
                     ),
                   ),
-                  const SizedBox(height: 12),
                   _GameModeCard(
                     title: 'Собери слово',
                     description:
@@ -86,7 +83,6 @@ class GamesScreen extends StatelessWidget {
                       const GameModeScreen(gameMode: GameMode.wordScramble),
                     ),
                   ),
-                  const SizedBox(height: 12),
                   _GameModeCard(
                     title: 'Правда или Ложь',
                     description: 'Определи, подходит ли слово к картинке',
@@ -128,8 +124,14 @@ class _GameModeCard extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Card(
-        child: Padding(
-          padding: const EdgeInsets.all(18),
+        child: Container(
+          margin: const EdgeInsets.only(bottom: 12),
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: AppTheme.cardBackground(context),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: AppTheme.cardBorder(context)),
+          ),
           child: Row(
             children: [
               Container(
@@ -167,14 +169,10 @@ class _GameModeCard extends StatelessWidget {
                   ],
                 ),
               ),
-              Icon(
-                Icons.chevron_right_rounded,
-                color: AppTheme.textSecondary(context),
-                size: 24,
-              ),
+              const Icon(Icons.chevron_right, color: AppColors.primary, size: 24),
             ],
           ),
-        ),
+        )
       ),
     );
   }
