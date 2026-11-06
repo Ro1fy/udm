@@ -138,10 +138,10 @@ class ProfileScreen extends StatelessWidget {
                         ),
                         child: Text(
                           'Уровень ${user.level}',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 15,
                             fontWeight: FontWeight.bold,
-                            color: AppColors.white,
+                            color: AppTheme.textColor(context),
                           ),
                         ),
                       ),
